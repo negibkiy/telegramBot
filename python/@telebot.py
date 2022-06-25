@@ -1,1 +1,3 @@
 @telebot
+
+bot_token = ""
