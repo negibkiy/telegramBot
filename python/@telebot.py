@@ -1,3 +1,3 @@
-@telebot
+import telebot
 
-bot_token = ""
+BOT_TOKEN = "5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU"
