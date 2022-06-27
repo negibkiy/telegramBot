@@ -24,10 +24,10 @@ def handle(message):
     if  message.text == '/time':
         bot.send_message(message.from_user.id, str(datetime.datetime.now()))
     if  message.text == '/sessions':
-        mycursor.execute('SELECT image FROM addresses')
-        photos = mycursor.fetchone()
+        mycursor.execute('SELECT * FROM addresses')
+        photos = mycursor.fetchall()
         for photo in photos:
-            ph = photo[1]
-        bot.send_photo(message.from_user.id, open(photo, 'rb'))
+            ph = photo[2]   #тут можно указать какое поле выбрать из бд
+        bot.send_photo(message.from_user.id, open(ph, 'rb'))
 
 bot.polling(none_stop=True)
