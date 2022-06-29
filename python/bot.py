@@ -7,14 +7,14 @@ BOT_TOKEN = "5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU"
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-mydb = mysql.connector.connect(
-  host=host,
-  user=user,
-  password=password,
-  database=database
-)
+# mydb = mysql.connector.connect(
+#   host=host,
+#   user=user,
+#   password=password,
+#   database=database
+# )
 
-mycursor = mydb.cursor()
+# mycursor = mydb.cursor()
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -61,15 +61,15 @@ def table(message):
     bot.send_message(message.from_user.id,"asd", reply_markup = markup)
 
 
-def build(message):
-    if  message.text == '🏫 Корпуса':
-        mycursor.execute(" SELECT * FROM addresses WHERE idaddresses = '3' ")
-        base = mycursor.fetchall()
-        for row in base:
-            text = row[1]
-            photo = row[2]   #тут можно указать какое поле выбрать из бд
-        bot.send_message(message.from_user.id, text)
-        bot.send_photo(message.from_user.id, open(photo, 'rb'))
+# def build(message):
+#     if  message.text == '🏫 Корпуса':
+#         mycursor.execute(" SELECT * FROM addresses WHERE idaddresses = '3' ")
+#         base = mycursor.fetchall()
+#         for row in base:
+#             text = row[1]
+#             photo = row[2]   #тут можно указать какое поле выбрать из бд
+#         bot.send_message(message.from_user.id, text)
+#         bot.send_photo(message.from_user.id, open(photo, 'rb'))
 
 
 bot.polling(none_stop=True)
