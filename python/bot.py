@@ -10,8 +10,6 @@ BOT_TOKEN = "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"
 
 bot = telebot.TeleBot(BOT_TOKEN)      # подключение к tlegram-боту
 
-global choice 
-
 @bot.message_handler(commands=['start'])     # вызов стартового меню по команде /start
 def start(message):
     message_id = message.from_user.id
@@ -80,10 +78,10 @@ def table(message):
         bot.send_photo(message.from_user.id, img)
         bot.register_next_step_handler(message, table)
 
-    if message.text == 'Расписание занятий' or message.text == 'Расписание экзаменов':                      # РАСПИСАНИЕ ЗАНЯТИЙ
+    if message.text == 'Расписание занятий' or message.text == 'Расписание экзаменов':                      # РАСПИСАНИЕ ЗАНЯТИЙ или ЭКЗАМЕНОВ
 
-        global choice
-        choice = message.text
+        global choice 
+        choice = message.text    # глобальная переменная для выбора между "расписанием экзхаменов" или "расписанием занятий"
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("1 Курс")
