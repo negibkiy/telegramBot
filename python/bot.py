@@ -33,7 +33,7 @@ def start(message):
 
     #ПРИВЕТСВТИЕ
     bot.send_message(message.from_user.id, "Хай")
-
+#asd
 
 @bot.message_handler(content_types=['text'])
 def event(message): 
