@@ -1,3 +1,4 @@
+from email import message
 import telebot
 import mysql.connector
 from connect import host, user, password, database
@@ -49,7 +50,13 @@ def event(message):
         bot.send_message(message.from_user.id, "Хай")
 
     if message.text == '📂 Полезные ссылки':
-        bot.send_message(message.from_user.id, "Хай")
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Сайты ВолгГТУ")
+        item2 = types.KeyboardButton("Вспомогательные")
+        item3 = types.KeyboardButton("Спорт")
+        markup.add(item1, item2, item3)
+        bot.send_message(message.from_user.id,"📂 Полезные ссылки", reply_markup = markup)
+        bot.register_next_step_handler(message, build)
 
     if  message.text == '🏫 Корпуса':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -61,8 +68,8 @@ def event(message):
         item6 = types.KeyboardButton("Красноармейский учебный корпус")
         item7 = types.KeyboardButton("Тракторный учебный корпус")
         markup.add(item1, item2, item3, item4, item5, item6, item7)
-        bot.send_message(message.from_user.id,"📅 Расписание", reply_markup = markup)
-        bot.register_next_step_handler(message, table)
+        bot.send_message(message.from_user.id,"🏫 Корпуса", reply_markup = markup)
+        bot.register_next_step_handler(message, build)
 
     if message.text == '📅 Расписание':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -74,23 +81,67 @@ def event(message):
         bot.send_message(message.from_user.id,"📅 Расписание", reply_markup = markup)
         bot.register_next_step_handler(message, table)
 
-
+@bot.message_handler(content_types=['text'])
 def table(message): 
     if message.text == 'Расписание преподавателя':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("преподавателя")
         markup.add(item1)
-        bot.send_message(message.from_user.id,"asd", reply_markup = markup)
+        bot.send_message(message.from_user.id,"'Расписание преподавателя", reply_markup = markup)
+    
+    if message.text == 'Расписание звонков':
+        img = open('img/table_ring/ring.jpg', 'rb')
+        bot.send_photo(message.from_user.id, img)
+        bot.register_next_step_handler(message, table)
+        
 
+@bot.message_handler(content_types=['text'])
 def build(message):
-    if  message.text == '🏫 Корпуса':
-        mycursor.execute(" SELECT * FROM addresses WHERE idaddresses = '3' ")
-        base = mycursor.fetchall()
-        for row in base:
-            text = row[1]
-            photo = row[2]   #тут можно указать какое поле выбрать из бд
-        bot.send_message(message.from_user.id, text)
-        bot.send_photo(message.from_user.id, open(photo, 'rb'))
+    if message.text == 'Высотный учебный корпус':
+        img = open('img/builds/Visotka.png', 'rb')
+        bot.send_photo(message.from_user.id, img)       
+        bot.send_message(message.chat.id, 'Высотный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28а')
+        bot.register_next_step_handler(message, build)
 
+    if message.text == 'Главный учебный корпус':
+        img = open('img/builds/GUK.png', 'rb')
+        bot.send_photo(message.from_user.id, img)              
+        bot.send_message(message.chat.id, 'Главный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28')
+        bot.register_next_step_handler(message, build)
+
+    if message.text == 'А учебный корпус':
+        img = open('img/builds/A_korpus.png', 'rb')
+        bot.send_photo(message.from_user.id, img)            
+        bot.send_message(message.chat.id, 'А учебный корпус. Адрес: Волгоград, Советская, 31')
+        bot.register_next_step_handler(message, build)
+
+    if message.text == 'Б учебный корпус':
+        img = open('img/builds/B_korpus.png', 'rb')
+        bot.send_photo(message.from_user.id, img)
+        bot.send_message(message.chat.id, 'Б учебный корпус. Адрес: Волгоград, Советская, 29')
+        bot.register_next_step_handler(message, build)
+
+    if message.text == 'Тракторный учебный корпус':
+        img = open('img/builds/Traktorniy.png', 'rb')
+        bot.send_photo(message.from_user.id, img)        
+        bot.send_message(message.chat.id, 'Тракторный учебный корпус. Адрес: Волгоград, Дегтярёва, 2')
+        bot.register_next_step_handler(message, build)
+
+    if message.text == 'Кировский учебный корпус':
+        img = open('img/builds/Kirovskiy.png', 'rb')
+        bot.send_photo(message.from_user.id, img)          
+        bot.send_message(message.chat.id, 'Кировский учебный корпус. Адрес: Волгоград, Армавирская, 15')
+        bot.register_next_step_handler(message, build)  
+
+    if message.text == 'Красноармейский учебный корпус':
+        img = open('img/builds/Krasnoarmeyskiy.png', 'rb')
+        bot.send_photo(message.from_user.id, img)           
+        bot.send_message(message.chat.id, 'Красноармейский учебный корпус. Адрес: Волгоград, проспект Столетова, 8')
+        bot.register_next_step_handler(message, build)
+
+@bot.message_handler(content_types=['text'])
+def website(messange):
+    if message.text == "dsfads":
+       bot.register_next_step_handler(message, build)
 
 bot.polling(none_stop=True)
