@@ -8,6 +8,8 @@ BOT_TOKEN = "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"
              # "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"  # мой токен
              # ""5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU""  # токен Грига
 
+
+
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # mydb = mysql.connector.connect(
@@ -101,43 +103,43 @@ def table(message):
 @bot.message_handler(content_types=['text'])
 def build(message):
     if message.text == 'Высотный учебный корпус':
-        img = open('telegramBot-1/img/builds/Visotka.png', 'rb')
+        img = open('img/builds/Visotka.png', 'rb')
         bot.send_photo(message.from_user.id, img)       
         bot.send_message(message.chat.id, 'Высотный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28а')
         bot.register_next_step_handler(message, build)
 
     if message.text == 'Главный учебный корпус':
-        img = open('telegramBot-1/img/builds/GUK.png', 'rb')
+        img = open('img/builds/GUK.png', 'rb')
         bot.send_photo(message.from_user.id, img)              
         bot.send_message(message.chat.id, 'Главный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28')
         bot.register_next_step_handler(message, build)
 
     if message.text == 'А учебный корпус':
-        img = open('telegramBot-1/img/builds/A_korpus.png', 'rb')
+        img = open('img/builds/A_korpus.png', 'rb')
         bot.send_photo(message.from_user.id, img)            
         bot.send_message(message.chat.id, 'А учебный корпус. Адрес: Волгоград, Советская, 31')
         bot.register_next_step_handler(message, build)
 
     if message.text == 'Б учебный корпус':
-        img = open('telegramBot-1/img/builds/B_korpus.png', 'rb')
+        img = open('img/builds/B_korpus.png', 'rb')
         bot.send_photo(message.from_user.id, img)
         bot.send_message(message.chat.id, 'Б учебный корпус. Адрес: Волгоград, Советская, 29')
         bot.register_next_step_handler(message, build)
 
     if message.text == 'Тракторный учебный корпус':
-        img = open('telegramBot-1/img/builds/Traktorniy.png', 'rb')
+        img = open('img/builds/Traktorniy.png', 'rb')
         bot.send_photo(message.from_user.id, img)        
         bot.send_message(message.chat.id, 'Тракторный учебный корпус. Адрес: Волгоград, Дегтярёва, 2')
         bot.register_next_step_handler(message, build)
 
     if message.text == 'Кировский учебный корпус':
-        img = open('telegramBot-1/img/builds/Kirovskiy.png', 'rb')
+        img = open('img/builds/Kirovskiy.png', 'rb')
         bot.send_photo(message.from_user.id, img)          
         bot.send_message(message.chat.id, 'Кировский учебный корпус. Адрес: Волгоград, Армавирская, 15')
         bot.register_next_step_handler(message, build)  
 
     if message.text == 'Красноармейский учебный корпус':
-        img = open('telegramBot-1/img/builds/Krasnoarmeyskiy.png', 'rb')
+        img = open('img/builds/Krasnoarmeyskiy.png', 'rb')
         bot.send_photo(message.from_user.id, img)           
         bot.send_message(message.chat.id, 'Красноармейский учебный корпус. Адрес: Волгоград, проспект Столетова, 8')
         bot.register_next_step_handler(message, build)
@@ -158,5 +160,7 @@ def build(message):
 # def website(messange):
 #     if message.text == "dsfads":
 #        bot.register_next_step_handler(message, build)
+
+
 
 bot.polling(none_stop=True)
