@@ -16,6 +16,7 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
+#fjgkfdkjgbkhjfdsbgbsfdgbkfsdbgkbsdkfg
 @bot.message_handler(commands=['start'])
 def start(message):
     #КЛАВИАТУРА НАЧАЛЬНОГО МЕНЮ
