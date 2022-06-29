@@ -2,7 +2,7 @@ import telebot
 import mysql.connector
 from connect import host, user, password, database
 from telebot import types
-
+#adsfsf
 BOT_TOKEN = "5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU"
 
 bot = telebot.TeleBot(BOT_TOKEN)
