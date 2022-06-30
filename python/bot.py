@@ -4,7 +4,7 @@ import mysql.connector
 from connect import host, user, password, database
 from telebot import types
 
-BOT_TOKEN = "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"
+BOT_TOKEN = "5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU"
              # "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"  # мой токен
              # ""5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU""  # токен Грига
 
@@ -35,7 +35,7 @@ def event(message):
         item2 = types.KeyboardButton("Вспомогательные")
         item3 = types.KeyboardButton("Спорт")
         item4 = types.KeyboardButton("Пароли и логины для DUMP")
-        btn_exit = types.KeyboardButton("Назад")
+        btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"📂 Полезные ссылки", reply_markup = markup)
         bot.register_next_step_handler(message, website)
@@ -49,7 +49,7 @@ def event(message):
         item5 = types.KeyboardButton("Кировский учебный корпус")
         item6 = types.KeyboardButton("Красноармейский учебный корпус")
         item7 = types.KeyboardButton("Тракторный учебный корпус")
-        btn_exit = types.KeyboardButton("Назад")
+        btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, btn_exit)
         bot.send_message(message.from_user.id,"🏫 Корпуса", reply_markup = markup)
         bot.register_next_step_handler(message, build)
@@ -60,14 +60,13 @@ def event(message):
         item2 = types.KeyboardButton("Расписание экзаменов")
         item3 = types.KeyboardButton("Расписание занятий")
         item4 = types.KeyboardButton("Расписание звонков")
-        btn_exit = types.KeyboardButton("Назад")
+        btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"📅 Расписание", reply_markup = markup)
         bot.register_next_step_handler(message, table)
 
 @bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "РАССПИСАНИЯ"
 def table(message): 
-
     if message.text == 'Расписание преподавателя':     # РАСПИСАНИЕ ПРЕПОДАВАТЕЛЯ
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("преподавателя")
@@ -80,60 +79,63 @@ def table(message):
         bot.register_next_step_handler(message, table)
 
     if message.text == 'Расписание занятий' or message.text == 'Расписание экзаменов':                      # РАСПИСАНИЕ ЗАНЯТИЙ или ЭКЗАМЕНОВ
-
         global choice 
         choice = message.text    # глобальная переменная для выбора между "расписанием экзхаменов" или "расписанием занятий"
-
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("1 Курс")
         item2 = types.KeyboardButton("2 Курс")
         item3 = types.KeyboardButton("3 Курс")
         item4 = types.KeyboardButton("4 Курс")
-        btn_exit = types.KeyboardButton("Назад")
+        btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
-        bot.register_next_step_handler(message, table)
+        bot.register_next_step_handler(message, tRas_tExm)
 
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)
+
+
+
+@bot.message_handler(content_types=['text'])
+def tRas_tExm(message):
     if message.text == '1 Курс' and choice == 'Расписание занятий':
         doc = open('document/table_default/1_kurs_raspisanie_zanyatiy.xlsx', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table)
+        bot.register_next_step_handler(message, tRas_tExm)
     elif message.text == '1 Курс' and choice == 'Расписание экзаменов':
         doc = open('document/table_exm/1_kurs_raspisanie_exams.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table)        
+        bot.register_next_step_handler(message, tRas_tExm)        
 
     if message.text == '2 Курс' and choice == 'Расписание занятий':
         doc = open('document/table_default/2_kurs_raspisanie_zanyatiy.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table)
+        bot.register_next_step_handler(message, tRas_tExm)
     elif message.text == '2 Курс' and choice == 'Расписание экзаменов':
         doc = open('document/table_exm/2_kurs_raspisanie_exams.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table) 
+        bot.register_next_step_handler(message, tRas_tExm) 
 
     if message.text == '3 Курс' and choice == 'Расписание занятий':
         doc = open('document/table_default/3_kurs_raspisanie_zanyatiy.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table)
+        bot.register_next_step_handler(message, tRas_tExm)
     elif message.text == '3 Курс' and choice == 'Расписание экзаменов':
         doc = open('document/table_exm/3_kurs_raspisanie_exams.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table)          
+        bot.register_next_step_handler(message, tRas_tExm)          
 
     if message.text == '4 Курс' and choice == 'Расписание занятий':
         doc = open('document/table_default/4_kurs_raspisanie_zanyatiy.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table)
+        bot.register_next_step_handler(message, tRas_tExm)
     elif message.text == '4 Курс' and choice == 'Расписание экзаменов':
         doc = open('document/table_exm/4_kurs_raspisanie_exams.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, table)                              
+        bot.register_next_step_handler(message, tRas_tExm)                              
 
-    if message.text == 'Назад':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
-        message_id = message.from_user.id
-        back_to_main(message_id)
-        
+
 
 @bot.message_handler(content_types=['text'])               # НАЖАТА КНОПКА "КОРПУСА"
 def build(message):
@@ -179,7 +181,7 @@ def build(message):
         bot.send_message(message.chat.id, 'Красноармейский учебный корпус. Адрес: Волгоград, проспект Столетова, 8')
         bot.register_next_step_handler(message, build)
 
-    if message.text == 'Назад':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)
 
@@ -195,7 +197,7 @@ def website(message):
         item5 = types.KeyboardButton("DUMP - Хранилище")
         item6 = types.KeyboardButton("Библиотека")
         item7 = types.KeyboardButton("Деканат ФЭВТ (VK группа)")
-        btn_exit = types.KeyboardButton("Назад")
+        btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, btn_exit)
         bot.send_message(message.from_user.id,"Основные официальные сайты и группы ФЭВТ ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, website)
@@ -234,7 +236,7 @@ def website(message):
         item8 = types.KeyboardButton("Решение СЛАУ онлайн")
         item9 = types.KeyboardButton("Определитель матрицы онлайн") 
         item10 = types.KeyboardButton("GeoGebra")        
-        btn_exit = types.KeyboardButton("Назад")
+        btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, item8, item9,  item10, btn_exit)
         bot.send_message(message.from_user.id,"Сайты для помощи студентам ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, website)        
@@ -274,7 +276,7 @@ def website(message):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Отдел спорта ВолгГТУ")
         item2 = types.KeyboardButton("Студенческий спортивный клуб ВолгГТУ (Группа VK)")   
-        btn_exit = types.KeyboardButton("Назад")
+        btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, btn_exit)
         bot.send_message(message.from_user.id,"Сайты и группы, посвященные спорту ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, website) 
@@ -291,7 +293,7 @@ def website(message):
         bot.send_photo(message.from_user.id, img)     
         bot.register_next_step_handler(message, website)
 
-    if message.text == 'Назад':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)
     
