@@ -343,7 +343,7 @@ def osn_podrazdeleniya(message):
 
     if message.text == 'Библиотека':    
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton("Расписание и кабинет (Библиотека)")
+        item1 = types.KeyboardButton("Расписание (Библиотека)")
         item2 = types.KeyboardButton("Группа VK (Библиотека)")
         item3 = types.KeyboardButton("Сайт (Библиотека)")
         btn_exit = types.KeyboardButton("В главное меню")
@@ -387,7 +387,9 @@ def decanat_FEVT(message):
 
 @bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Библиотека"
 def library(message):  
-
+    if message.text == 'Расписание (Библиотека)':
+        bot.send_message(message.chat.id, 'пн-пт 8.30-17.00 \n сб 9.00-16.00')
+        bot.register_next_step_handler(message, library)
 
     if message.text == 'Группа VK (Библиотека)':
         bot.send_message(message.chat.id, 'https://vk.com/library_vstu')
