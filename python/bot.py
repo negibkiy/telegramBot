@@ -133,8 +133,11 @@ def tRas_tExm(message):
     elif message.text == '4 Курс' and choice == 'Расписание экзаменов':
         doc = open('document/table_exm/4_kurs_raspisanie_exams.xls', 'rb')
         bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)                              
+        bot.register_next_step_handler(message, tRas_tExm)
 
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)                              
 
 
 @bot.message_handler(content_types=['text'])               # НАЖАТА КНОПКА "КОРПУСА"
@@ -200,29 +203,7 @@ def website(message):
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, btn_exit)
         bot.send_message(message.from_user.id,"Основные официальные сайты и группы ФЭВТ ВолгГТУ", reply_markup = markup)
-        bot.register_next_step_handler(message, website)
-
-    if message.text == 'edu':
-         bot.send_message(message.chat.id, 'http://edu.vstu.ru/')
-         bot.register_next_step_handler(message, website)
-    if message.text == 'eos2':
-         bot.send_message(message.chat.id, 'https://eos2.vstu.ru/')
-         bot.register_next_step_handler(message, website)         
-    if message.text == 'Рейтинг студента':
-         bot.send_message(message.chat.id, 'https://www.vstu.ru/student/reyting-studenta/index.php?dep=fevt')
-         bot.register_next_step_handler(message, website)
-    if message.text == 'Главная страница ВолгГТУ':
-         bot.send_message(message.chat.id, 'https://www.vstu.ru/')
-         bot.register_next_step_handler(message, website)
-    if message.text == 'DUMP - Хранилище':
-         bot.send_message(message.chat.id, 'http://dump.vstu.ru/')
-         bot.register_next_step_handler(message, website)         
-    if message.text == 'Библиотека':
-         bot.send_message(message.chat.id, 'http://library.vstu.ru/')
-         bot.register_next_step_handler(message, website)  
-    if message.text == 'Деканат ФЭВТ (VK группа)':
-         bot.send_message(message.chat.id, 'https://vk.com/club193491114')
-         bot.register_next_step_handler(message, website) 
+        bot.register_next_step_handler(message, web_vstu)
 
     if message.text == 'Вспомогательные': 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -239,38 +220,7 @@ def website(message):
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, item8, item9,  item10, btn_exit)
         bot.send_message(message.from_user.id,"Сайты для помощи студентам ВолгГТУ", reply_markup = markup)
-        bot.register_next_step_handler(message, website)        
-
-    if message.text == 'Diagrams.net':
-         bot.send_message(message.chat.id, 'https://app.diagrams.net/')
-         bot.register_next_step_handler(message, website)
-    if message.text == 'ERDPlus':
-         bot.send_message(message.chat.id, 'https://erdplus.com/')
-         bot.register_next_step_handler(message, website)         
-    if message.text == 'Iconfinder - картинки для приложений':
-         bot.send_message(message.chat.id, 'https://www.iconfinder.com/')
-         bot.register_next_step_handler(message, website)
-    if message.text == 'Online Color Picker':
-         bot.send_message(message.chat.id, 'https://colorpicker.me/#4c063b')
-         bot.register_next_step_handler(message, website)
-    if message.text == 'sistemas - картинки для приложений':
-         bot.send_message(message.chat.id, 'https://icon-icons.com/ru/pack/sistemas/2104')
-         bot.register_next_step_handler(message, website)         
-    if message.text == 'Антиплагиат':
-         bot.send_message(message.chat.id, 'https://www.antiplagiat.ru/')
-         bot.register_next_step_handler(message, website)  
-    if message.text == 'Перевод двоичного кода в текст онлайн':
-         bot.send_message(message.chat.id, 'https://allcalc.ru/node/1977')
-         bot.register_next_step_handler(message, website)
-    if message.text == 'Решение СЛАУ онлайн':
-         bot.send_message(message.chat.id, 'https://ru.onlinemschool.com/math/assistance/equation/gaus/')
-         bot.register_next_step_handler(message, website)           
-    if message.text == 'Определитель матрицы онлайн':
-         bot.send_message(message.chat.id, 'https://ru.onlinemschool.com/math/assistance/matrix/determinant/')
-         bot.register_next_step_handler(message, website) 
-    if message.text == 'GeoGebra':
-         bot.send_message(message.chat.id, 'https://www.geogebra.org/')
-         bot.register_next_step_handler(message, website) 
+        bot.register_next_step_handler(message, web_useful)      
 
     if message.text == 'Спорт':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -279,14 +229,7 @@ def website(message):
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, btn_exit)
         bot.send_message(message.from_user.id,"Сайты и группы, посвященные спорту ВолгГТУ", reply_markup = markup)
-        bot.register_next_step_handler(message, website) 
-    
-    if message.text == 'Отдел спорта ВолгГТУ':
-        bot.send_message(message.chat.id, 'https://www.vstu.ru/student/studencheskaya-zhizn/sportivnaya-deyatelnost/')
-        bot.register_next_step_handler(message, website) 
-    if message.text == 'Студенческий спортивный клуб ВолгГТУ (Группа VK)':
-        bot.send_message(message.chat.id, 'https://vk.com/public180881363')
-        bot.register_next_step_handler(message, website) 
+        bot.register_next_step_handler(message, web_sport) 
 
     if message.text == 'Пароли и логины для DUMP':             # ОТСЫЛАЕТ КАРТИНКУ С ЛОГИНАМИ И ПАРОЛЯМИ ОТ DUMP.VSTU.RU
         img = open('img/table_dump_logins/parol_login_dump.jpg', 'rb')
@@ -296,7 +239,88 @@ def website(message):
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)
+
+@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
+def web_vstu(message):
+    if message.text == 'edu':
+         bot.send_message(message.chat.id, 'http://edu.vstu.ru/')
+         bot.register_next_step_handler(message, web_vstu)
+    if message.text == 'eos2':
+         bot.send_message(message.chat.id, 'https://eos2.vstu.ru/')
+         bot.register_next_step_handler(message, web_vstu)         
+    if message.text == 'Рейтинг студента':
+         bot.send_message(message.chat.id, 'https://www.vstu.ru/student/reyting-studenta/index.php?dep=fevt')
+         bot.register_next_step_handler(message, web_vstu)
+    if message.text == 'Главная страница ВолгГТУ':
+         bot.send_message(message.chat.id, 'https://www.vstu.ru/')
+         bot.register_next_step_handler(message, web_vstu)
+    if message.text == 'DUMP - Хранилище':
+         bot.send_message(message.chat.id, 'http://dump.vstu.ru/')
+         bot.register_next_step_handler(message, web_vstu)         
+    if message.text == 'Библиотека':
+         bot.send_message(message.chat.id, 'http://library.vstu.ru/')
+         bot.register_next_step_handler(message, web_vstu)  
+    if message.text == 'Деканат ФЭВТ (VK группа)':
+         bot.send_message(message.chat.id, 'https://vk.com/club193491114')
+         bot.register_next_step_handler(message, web_vstu) 
+
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)
+  
+@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
+def web_useful(message):
+    if message.text == 'Diagrams.net':
+         bot.send_message(message.chat.id, 'https://app.diagrams.net/')
+         bot.register_next_step_handler(message, web_useful)
+    if message.text == 'ERDPlus':
+         bot.send_message(message.chat.id, 'https://erdplus.com/')
+         bot.register_next_step_handler(message, web_useful)         
+    if message.text == 'Iconfinder - картинки для приложений':
+         bot.send_message(message.chat.id, 'https://www.iconfinder.com/')
+         bot.register_next_step_handler(message, web_useful)
+    if message.text == 'Online Color Picker':
+         bot.send_message(message.chat.id, 'https://colorpicker.me/#4c063b')
+         bot.register_next_step_handler(message, web_useful)
+    if message.text == 'sistemas - картинки для приложений':
+         bot.send_message(message.chat.id, 'https://icon-icons.com/ru/pack/sistemas/2104')
+         bot.register_next_step_handler(message, web_useful)         
+    if message.text == 'Антиплагиат':
+         bot.send_message(message.chat.id, 'https://www.antiplagiat.ru/')
+         bot.register_next_step_handler(message, web_useful)  
+    if message.text == 'Перевод двоичного кода в текст онлайн':
+         bot.send_message(message.chat.id, 'https://allcalc.ru/node/1977')
+         bot.register_next_step_handler(message, web_useful)
+    if message.text == 'Решение СЛАУ онлайн':
+         bot.send_message(message.chat.id, 'https://ru.onlinemschool.com/math/assistance/equation/gaus/')
+         bot.register_next_step_handler(message, web_useful)           
+    if message.text == 'Определитель матрицы онлайн':
+         bot.send_message(message.chat.id, 'https://ru.onlinemschool.com/math/assistance/matrix/determinant/')
+         bot.register_next_step_handler(message, web_useful) 
+    if message.text == 'GeoGebra':
+         bot.send_message(message.chat.id, 'https://www.geogebra.org/')
+         bot.register_next_step_handler(message, web_useful) 
+
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)
+
+@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
+def web_sport(message):    
+    if message.text == 'Отдел спорта ВолгГТУ':
+        bot.send_message(message.chat.id, 'https://www.vstu.ru/student/studencheskaya-zhizn/sportivnaya-deyatelnost/')
+        bot.register_next_step_handler(message, web_sport) 
+    if message.text == 'Студенческий спортивный клуб ВолгГТУ (Группа VK)':
+        bot.send_message(message.chat.id, 'https://vk.com/public180881363')
+        bot.register_next_step_handler(message, web_sport) 
+
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)
     
+
+
+
 
 
 def back_to_main(message):                                     # ФУНКЦИЯ ДЛЯ ВЫЗОВА ГЛАВНОГО МЕНЮ
