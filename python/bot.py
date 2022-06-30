@@ -4,11 +4,11 @@ import mysql.connector
 from connect import host, user, password, database
 from telebot import types
 
-BOT_TOKEN = "5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU"
+BOT_TOKEN = "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"
              # "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"  # мой токен
              # ""5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU""  # токен Грига
 
-bot = telebot.TeleBot(BOT_TOKEN)      # подключение к tlegram-боту
+bot = telebot.TeleBot(BOT_TOKEN)      # подключение к telegram-боту
 
 @bot.message_handler(commands=['start'])     # вызов стартового меню по команде /start
 def start(message):
