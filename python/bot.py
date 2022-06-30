@@ -163,8 +163,6 @@ def build(message):
         bot.register_next_step_handler(message, build)
 
 
-
-
 @bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
 def website(message):
 
@@ -219,7 +217,7 @@ def website(message):
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
 
-@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "Сайты ВолгГТУ"
+@bot.message_handler(content_types=['text'])      # функция для вызова функции с выбором полезной ссылки ссылки
 def useful_links(message):
     if message.text == 'В главное меню' or choice == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
@@ -227,84 +225,6 @@ def useful_links(message):
         link = choice_website(choice, message)
         bot.send_message(message.chat.id, link)
         bot.register_next_step_handler(message, useful_links)
-
-
-#     if message.text == 'edu':
-#          bot.send_message(message.chat.id, 'http://edu.vstu.ru/')
-#          bot.register_next_step_handler(message, web_vstu)
-#     if message.text == 'eos2':
-#          bot.send_message(message.chat.id, 'https://eos2.vstu.ru/')
-#          bot.register_next_step_handler(message, web_vstu)         
-#     if message.text == 'Рейтинг студента':
-#          bot.send_message(message.chat.id, 'https://www.vstu.ru/student/reyting-studenta/index.php?dep=fevt')
-#          bot.register_next_step_handler(message, web_vstu)
-#     if message.text == 'Главная страница ВолгГТУ':
-#          bot.send_message(message.chat.id, 'https://www.vstu.ru/')
-#          bot.register_next_step_handler(message, web_vstu)
-#     if message.text == 'DUMP - Хранилище':
-#          bot.send_message(message.chat.id, 'http://dump.vstu.ru/')
-#          bot.register_next_step_handler(message, web_vstu)         
-#     if message.text == 'Библиотека':
-#          bot.send_message(message.chat.id, 'http://library.vstu.ru/')
-#          bot.register_next_step_handler(message, web_vstu)  
-#     if message.text == 'Деканат ФЭВТ (VK группа)':
-#          bot.send_message(message.chat.id, 'https://vk.com/club193491114')
-#          bot.register_next_step_handler(message, web_vstu) 
-
-#     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
-#         message_id = message.from_user.id
-#         back_to_main(message_id)
-  
-# @bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "Вспомогательные"
-# def web_useful(message):
-#     if message.text == 'Diagrams.net':
-#          bot.send_message(message.chat.id, 'https://app.diagrams.net/')
-#          bot.register_next_step_handler(message, web_useful)
-#     if message.text == 'ERDPlus':
-#          bot.send_message(message.chat.id, 'https://erdplus.com/')
-#          bot.register_next_step_handler(message, web_useful)         
-#     if message.text == 'Iconfinder - картинки для приложений':
-#          bot.send_message(message.chat.id, 'https://www.iconfinder.com/')
-#          bot.register_next_step_handler(message, web_useful)
-#     if message.text == 'Online Color Picker':
-#          bot.send_message(message.chat.id, 'https://colorpicker.me/#4c063b')
-#          bot.register_next_step_handler(message, web_useful)
-#     if message.text == 'sistemas - картинки для приложений':
-#          bot.send_message(message.chat.id, 'https://icon-icons.com/ru/pack/sistemas/2104')
-#          bot.register_next_step_handler(message, web_useful)         
-#     if message.text == 'Антиплагиат':
-#          bot.send_message(message.chat.id, 'https://www.antiplagiat.ru/')
-#          bot.register_next_step_handler(message, web_useful)  
-#     if message.text == 'Перевод двоичного кода в текст онлайн':
-#          bot.send_message(message.chat.id, 'https://allcalc.ru/node/1977')
-#          bot.register_next_step_handler(message, web_useful)
-#     if message.text == 'Решение СЛАУ онлайн':
-#          bot.send_message(message.chat.id, 'https://ru.onlinemschool.com/math/assistance/equation/gaus/')
-#          bot.register_next_step_handler(message, web_useful)           
-#     if message.text == 'Определитель матрицы онлайн':
-#          bot.send_message(message.chat.id, 'https://ru.onlinemschool.com/math/assistance/matrix/determinant/')
-#          bot.register_next_step_handler(message, web_useful) 
-#     if message.text == 'GeoGebra':
-#          bot.send_message(message.chat.id, 'https://www.geogebra.org/')
-#          bot.register_next_step_handler(message, web_useful) 
-
-#     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
-#         message_id = message.from_user.id
-#         back_to_main(message_id)
-
-# @bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "Спорт"
-# def web_sport(message):    
-#     if message.text == 'Отдел спорта ВолгГТУ':
-#         bot.send_message(message.chat.id, 'https://www.vstu.ru/student/studencheskaya-zhizn/sportivnaya-deyatelnost/')
-#         bot.register_next_step_handler(message, web_sport) 
-#     if message.text == 'Студенческий спортивный клуб ВолгГТУ (Группа VK)':
-#         bot.send_message(message.chat.id, 'https://vk.com/public180881363')
-#         bot.register_next_step_handler(message, web_sport) 
-
-#     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
-#         message_id = message.from_user.id
-#         back_to_main(message_id)
-
 
 
 @bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "ОСНОВНЫЕ ПОДРАЗДЕЛЕНИЯ"
@@ -396,7 +316,7 @@ def profkom(message):
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main()) 
 
 
-def choice_build(message):                         # функция выбора корпуса
+def choice_build(message):                         # функция для выбора корпуса
     if message.text == 'Высотный учебный корпус':
         name = 'Visotka.png'
         address = 'Высотный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28а'
@@ -431,12 +351,10 @@ def choice_build(message):                         # функция выбора
     return name, address
 
 
-def choice_website(choice_group, message):
+def choice_website(choice_group, message):        # функция для выбора полезных ссылок
+    choice_website = message.text    # переменная для перевода message в формат message.text
 
-    choice_website = message.text
-    # choice_group = message.text
-
-    if choice_group == 'Сайты ВолгГТУ':
+    if choice_group == 'Сайты ВолгГТУ':  # если выбрана "Сайты ВолгГТУ"
         if choice_website == 'edu':
             link = 'http://edu.vstu.ru/'
         if choice_website == 'eos2':
@@ -452,7 +370,7 @@ def choice_website(choice_group, message):
         if choice_website == 'Деканат ФЭВТ (VK группа)':
             link = 'https://vk.com/club193491114'
     
-    if choice_group == 'Вспомогательные':
+    if choice_group == 'Вспомогательные':    # если выбрана "Вспомогательные"
         if choice_website == 'Diagrams.net':
             link = 'https://app.diagrams.net/'
         if choice_website == 'ERDPlus':
@@ -474,7 +392,7 @@ def choice_website(choice_group, message):
         if choice_website == 'GeoGebra':
             link = 'https://www.geogebra.org/'
 
-    if choice_group == 'Спорт':    
+    if choice_group == 'Спорт':    # если выбрана "Спорт"
         if choice_group == 'Спорт' and choice_website == 'Отдел спорта ВолгГТУ':
             link = 'https://www.vstu.ru/student/studencheskaya-zhizn/sportivnaya-deyatelnost/'
         if choice_group == 'Спорт' and choice_website == 'Студенческий спортивный клуб ВолгГТУ (Группа VK)':
@@ -483,7 +401,6 @@ def choice_website(choice_group, message):
     if choice_group == 'В главное меню' or choice_website == 'В главное меню' or message.text == 'В главное меню':  # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
     
-
     return link     
 
 
