@@ -1,3 +1,4 @@
+import numpy as np
 from email import message
 import telebot
 import mysql.connector
@@ -5,7 +6,7 @@ from connect import host, user, password, database
 from telebot import types
 import connect  # подключение файла коннект для подключения к БД
 
-import back_to_main
+from back_to_main import back_to_main
 
 # connection_db = mysql.connector.connect(user=user, password=password, host=host, database=database)  # подключение к БД
 
@@ -17,9 +18,7 @@ bot = telebot.TeleBot(BOT_TOKEN)      # подключение к telegram-бо�
 
 @bot.message_handler(commands=['start'])     # вызов стартового меню по команде /start
 def start(message):
-    message_id = message.from_user.id
-    back_to_main.back_to_main(message_id)
-
+    bot.send_message(message.from_user.id,"🚁 Основные подразделения", reply_markup = back_to_main())
 
 
 @bot.message_handler(content_types=['text'])     #  ГЛАВНАЯ ФУНКЦИЯ С КНОПКАМИ
@@ -157,47 +156,11 @@ def tRas_tExm(message):
 
 @bot.message_handler(content_types=['text'])               # НАЖАТА КНОПКА "КОРПУСА"
 def build(message):
-    if message.text == 'Высотный учебный корпус':
-        img = open('img/builds/Visotka.png', 'rb')
-        bot.send_photo(message.from_user.id, img)       
-        bot.send_message(message.chat.id, 'Высотный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28а')
-        bot.register_next_step_handler(message, build)
-
-    if message.text == 'Главный учебный корпус':
-        img = open('img/builds/GUK.png', 'rb')
-        bot.send_photo(message.from_user.id, img)              
-        bot.send_message(message.chat.id, 'Главный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28')
-        bot.register_next_step_handler(message, build)
-
-    if message.text == 'А учебный корпус':
-        img = open('img/builds/A_korpus.png', 'rb')
-        bot.send_photo(message.from_user.id, img)            
-        bot.send_message(message.chat.id, 'А учебный корпус. Адрес: Волгоград, Советская, 31')
-        bot.register_next_step_handler(message, build)
-
-    if message.text == 'Б учебный корпус':
-        img = open('img/builds/B_korpus.png', 'rb')
-        bot.send_photo(message.from_user.id, img)
-        bot.send_message(message.chat.id, 'Б учебный корпус. Адрес: Волгоград, Советская, 29')
-        bot.register_next_step_handler(message, build)
-
-    if message.text == 'Тракторный учебный корпус':
-        img = open('img/builds/Traktorniy.png', 'rb')
-        bot.send_photo(message.from_user.id, img)        
-        bot.send_message(message.chat.id, 'Тракторный учебный корпус. Адрес: Волгоград, Дегтярёва, 2')
-        bot.register_next_step_handler(message, build)
-
-    if message.text == 'Кировский учебный корпус':
-        img = open('img/builds/Kirovskiy.png', 'rb')
-        bot.send_photo(message.from_user.id, img)          
-        bot.send_message(message.chat.id, 'Кировский учебный корпус. Адрес: Волгоград, Армавирская, 15')
-        bot.register_next_step_handler(message, build)  
-
-    if message.text == 'Красноармейский учебный корпус':
-        img = open('img/builds/Krasnoarmeyskiy.png', 'rb')
-        bot.send_photo(message.from_user.id, img)           
-        bot.send_message(message.chat.id, 'Красноармейский учебный корпус. Адрес: Волгоград, проспект Столетова, 8')
-        bot.register_next_step_handler(message, build)
+    name, address = choice_build (message)
+    img = open(f'img/builds/{name.title()}', 'rb')
+    bot.send_photo(message.from_user.id, img)           
+    bot.send_message(message.chat.id, f'{address.title()}')
+    bot.register_next_step_handler(message, build)
 
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
@@ -429,18 +392,39 @@ def profkom(message):
         back_to_main(message_id)    
 
 
+def choice_build(message):                         # функция выбора корпуса
+    if message.text == 'Высотный учебный корпус':
+        name = 'Visotka.png'
+        address = 'Высотный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28а'
+
+    if message.text == 'Главный учебный корпус':
+        name = 'GUK.png'
+        address = 'Главный учебный корпус. Адрес: Волгоград, проспект им. Ленина, 28'
+
+    if message.text == 'А учебный корпус':
+        name = 'A_korpus.png'
+        address = 'А учебный корпус. Адрес: Волгоград, Советская, 31'
+
+    if message.text == 'Б учебный корпус':
+        name = 'B_korpus.png'
+        address = 'Б учебный корпус. Адрес: Волгоград, Советская, 29'
+
+    if message.text == 'Тракторный учебный корпус':
+        name = 'Traktorniy.png'
+        address = 'Тракторный учебный корпус. Адрес: Волгоград, Дегтярёва, 2'
+
+    if message.text == 'Кировский учебный корпус':
+        name = 'Kirovskiy.png'
+        address = 'Кировский учебный корпус. Адрес: Волгоград, Армавирская, 15'
+
+    if message.text == 'Красноармейский учебный корпус':
+        name = 'Krasnoarmeyskiy.png'
+        address = 'Красноармейский учебный корпус. Адрес: Волгоград, проспект Столетова, 8'
+    
+    return name, address
 
 
-# def back_to_main(message):                                     # ФУНКЦИЯ ДЛЯ ВЫЗОВА ГЛАВНОГО МЕНЮ
-#     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-#     item1 = types.KeyboardButton("🚲 Мероприятия")
-#     item2 = types.KeyboardButton("🏢 Консультации")
-#     item3 = types.KeyboardButton("🕒 Заметки")
-#     item4= types.KeyboardButton("🚁 Основные подразделения")
-#     item5 = types.KeyboardButton("📂 Полезные ссылки")
-#     item6 = types.KeyboardButton("🏫 Корпуса") 
-#     item7 = types.KeyboardButton("📅 Расписание")
-#     markup.add(item1, item2, item3, item4, item5, item6, item7)
-#     bot.send_message(message, "Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = markup)
+
+
 
 bot.polling(none_stop=True)
