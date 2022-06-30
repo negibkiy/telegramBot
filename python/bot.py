@@ -1,4 +1,5 @@
-from email import message
+from email import message, message_from_file
+from genericpath import exists
 import telebot
 import mysql.connector
 from connect import host, user, password, database
@@ -9,6 +10,21 @@ BOT_TOKEN = "5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU"
              # ""5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU""  # токен Грига
 
 bot = telebot.TeleBot(BOT_TOKEN)      # подключение к tlegram-боту
+
+mydb = mysql.connector.connect(
+  host=host,
+  user=user,
+  password=password,
+  database=database
+)
+
+class User:
+    def __init__(self, iduser):
+        self. iduser = iduser
+        self. password = ' '
+    
+
+mycursor = mydb.cursor()
 
 @bot.message_handler(commands=['start'])     # вызов стартового меню по команде /start
 def start(message):
@@ -21,10 +37,53 @@ def event(message):
         bot.send_message(message.from_user.id, "Хай")
         
     if message.text == '🏢 Консультации':
-        bot.send_message(message.from_user.id, "Хай2")
+        bot.send_message(message.from_user.id, "Введите name")
+        bot.register_next_step_handler(message, name2)
 
-    if message.text == '🕒 Заметки':
-        bot.send_message(message.from_user.id, "Хай")
+    if message.text == '🕒 Заметки': 
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Войти в аккаунт")
+        item2 = types.KeyboardButton("Зарегистрироваться")
+        markup.add(item1, item2)
+        bot.send_message(message.from_user.id,"🕒 Заметки!", reply_markup = markup)
+        bot.register_next_step_handler(message, notes_reg)
+        # try:
+        #     sql = "INSERT INTO webcites (webcite_name, webcite_link) VALUE (%s, %s)"
+        #     val = (User._name, User._link)
+        #     mycursor.execute(sql, val)
+        #     mydb.commit()
+        # except:
+        #     bot.send_message(message.from_user.id, "вы зарегистрированы")
+        # markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        # item1 = types.KeyboardButton("Добавить заметку")
+        # item2 = types.KeyboardButton("Удалить заметку")
+        # item3 = types.KeyboardButton("Вывести все заметки")
+        # markup.add(item1, item2, item3)
+        # bot.send_message(message.from_user.id,"Выберите что хотите сделать!", reply_markup = markup)
+        # bot.register_next_step_handler(message, notes)
+        # try:
+        #     sql = "INSERT INTO webcites (webcite_name, webcite_link) VALUE (%s, %s)"
+        #     val = (User._name, User._link)
+        #     mycursor.execute(sql, val)
+        #     mydb.commit()
+        # except:
+        #     bot.send_message(message.from_user.id, "вы зарегистрированы")
+
+        # mycursor.execute('SELECT webcite_name, webcite_link FROM webcites')
+        # for result in mycursor.fetchall():
+        #     my_list = []
+        #     for x in result:
+        #         my_list.append(''.join(x))
+        #     result = ' '.join(my_list)
+        #     bot.send_message(message.from_user.id, result)
+
+        # mycursor.execute(" SELECT * FROM _users ")
+        # base = mycursor.fetchall()
+        # for row in base:
+        #     text = row[1]
+        #     photo = row[2]   #тут можно указать какое поле выбрать из бд
+        # bot.send_message(message.from_user.id, text)
+        # bot.send_photo(message.from_user.id, open(photo, 'rb'))
 
     if message.text == '🚁 Основные подразделения':
         bot.send_message(message.from_user.id, "Хай")
@@ -95,6 +154,57 @@ def table(message):
         message_id = message.from_user.id
         back_to_main(message_id)
 
+
+################################# РЕГИСТРАЦИЯ #################################
+
+@bot.message_handler(content_types=['text'])
+def notes_reg(message): 
+    if message.text == 'Войти в аккаунт':
+        bot.send_message(message.from_user.id, "Введите пароль")
+        bot.register_next_step_handler(message, notes_pass2)
+    if message.text == 'Зарегистрироваться':
+        bot.send_message(message.from_user.id, "Чтобы зарегистрироваться введите пароль")
+        bot.register_next_step_handler(message, notes_pass)
+
+@bot.message_handler(content_types=['text'])
+def notes_pass(message): 
+        User.idusers = message.from_user.id
+        User.password = message.text
+        try:
+            sql = "INSERT INTO _users (idusers, passwords) VALUE (%s, %s)"
+            val = (User.idusers, User.password)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            bot.register_next_step_handler(message, notes)
+        except:
+            bot.send_message(message.from_user.id, "Вы уже зарегистрированы")
+
+@bot.message_handler(content_types=['text'])
+def notes_pass2(message): 
+        User.idusers = message.from_user.id
+        User.password = message.text
+        sql = "SELECT idusers, passwords FROM _users WHERE idusers = %s AND passwords = %s"
+        val = (User.idusers, User.password)
+        mycursor.execute(sql, val)
+        exist = mycursor.fetchall()
+        if len(exist) == 1 :
+            bot.send_message(message.from_user.id, "есть совпадение")
+            bot.register_next_step_handler(message, notes)
+        else:
+            bot.send_message(message.from_user.id, "Неверный пароль, либо не зарегистрированы")
+
+
+
+@bot.message_handler(content_types=['text'])
+def notes(messange):
+    if message.text == 'Добавить заметку':
+        bot.register_next_step_handler(message, tRas_tExm)
+    if message.text == 'Удалить заметку':
+        bot.register_next_step_handler(message, tRas_tExm)
+    if message.text == 'Вывести все заметки':
+        bot.register_next_step_handler(message, tRas_tExm)
+
+################################# РЕГИСТРАЦИЯ #################################
 
 
 @bot.message_handler(content_types=['text'])
@@ -310,5 +420,15 @@ def back_to_main(message):                                     # ФУНКЦИЯ 
     item7 = types.KeyboardButton("📅 Расписание")
     markup.add(item1, item2, item3, item4, item5, item6, item7)
     bot.send_message(message, "Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = markup)
+
+
+def name2(message):
+    User._name= message.text
+    bot.send_message(message.from_user.id, "Введите link")
+    bot.register_next_step_handler(message, link2)
+
+def link2(message):
+    User._link= message.text
+    bot.register_next_step_handler(message, event)
 
 bot.polling(none_stop=True)
