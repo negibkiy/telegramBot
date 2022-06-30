@@ -81,18 +81,74 @@ def event(message):
         bot.send_message(message.from_user.id,"📅 Расписание", reply_markup = markup)
         bot.register_next_step_handler(message, table)
 
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "РАССПИСАНИЯ"
 def table(message): 
-    if message.text == 'Расписание преподавателя':
+    if message.text == 'Расписание преподавателя':     # РАСПИСАНИЕ ПРЕПОДАВАТЕЛЯ
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("преподавателя")
         markup.add(item1)
         bot.send_message(message.from_user.id,"'Расписание преподавателя", reply_markup = markup)
     
-    if message.text == 'Расписание звонков':
+    if message.text == 'Расписание звонков':         # ЗВОНКИ
         img = open('img/table_ring/ring.jpg', 'rb')
         bot.send_photo(message.from_user.id, img)
         bot.register_next_step_handler(message, table)
+
+    if message.text == 'Расписание занятий' or message.text == 'Расписание экзаменов':                      # РАСПИСАНИЕ ЗАНЯТИЙ или ЭКЗАМЕНОВ
+        global choice 
+        choice = message.text    # глобальная переменная для выбора между "расписанием экзхаменов" или "расписанием занятий"
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("1 Курс")
+        item2 = types.KeyboardButton("2 Курс")
+        item3 = types.KeyboardButton("3 Курс")
+        item4 = types.KeyboardButton("4 Курс")
+        btn_exit = types.KeyboardButton("Назад")
+        markup.add(item1, item2, item3, item4, btn_exit)
+        bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
+        bot.register_next_step_handler(message, table_and_tableexm)
+
+
+@bot.message_handler(content_types=['text'])
+def table_and_tableexm(message):
+    if message.text == '1 Курс' and choice == 'Расписание занятий':
+        doc = open('document/table_default/1_kurs_raspisanie_zanyatiy.xlsx', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table)
+    elif message.text == '1 Курс' and choice == 'Расписание экзаменов':
+        doc = open('document/table_exm/1_kurs_raspisanie_exams.xls', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table)        
+
+    if message.text == '2 Курс' and choice == 'Расписание занятий':
+        doc = open('document/table_default/2_kurs_raspisanie_zanyatiy.xls', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table)
+    elif message.text == '2 Курс' and choice == 'Расписание экзаменов':
+        doc = open('document/table_exm/2_kurs_raspisanie_exams.xls', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table) 
+
+    if message.text == '3 Курс' and choice == 'Расписание занятий':
+        doc = open('document/table_default/3_kurs_raspisanie_zanyatiy.xls', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table)
+    elif message.text == '3 Курс' and choice == 'Расписание экзаменов':
+        doc = open('document/table_exm/3_kurs_raspisanie_exams.xls', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table)          
+
+    if message.text == '4 Курс' and choice == 'Расписание занятий':
+        doc = open('document/table_default/4_kurs_raspisanie_zanyatiy.xls', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table)
+    elif message.text == '4 Курс' and choice == 'Расписание экзаменов':
+        doc = open('document/table_exm/4_kurs_raspisanie_exams.xls', 'rb')
+        bot.send_document(message.from_user.id, doc)       
+        bot.register_next_step_handler(message, table)                              
+
+    if message.text == 'Назад':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)
         
 
 @bot.message_handler(content_types=['text'])
