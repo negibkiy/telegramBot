@@ -1,7 +1,7 @@
-from email import message, message_from_file
-from genericpath import exists
 import telebot
 import mysql.connector
+import datetime
+import re
 from connect import host, user, password, database
 from telebot import types
 
@@ -196,13 +196,41 @@ def notes_pass2(message):
 
 
 @bot.message_handler(content_types=['text'])
-def notes(messange):
+def notes(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Добавить заметку")
+    item2 = types.KeyboardButton("Удалить заметку")
+    item3 = types.KeyboardButton("Вывести все заметки")
+    markup.add(item1, item2, item3)
+    bot.send_message(message.from_user.id,"Выберите что хотите сделать!", reply_markup = markup)
+    bot.register_next_step_handler(message, notes_menu)
+
+@bot.message_handler(content_types=['text'])
+def notes_menu(message):
     if message.text == 'Добавить заметку':
-        bot.register_next_step_handler(message, tRas_tExm)
+        bot.register_next_step_handler(message, notes_menu_add)
     if message.text == 'Удалить заметку':
         bot.register_next_step_handler(message, tRas_tExm)
     if message.text == 'Вывести все заметки':
         bot.register_next_step_handler(message, tRas_tExm)
+
+@bot.message_handler(content_types=['text'])
+def notes_menu_add(message):
+    reg ='\d{4}-\d\d-\d\d \d\d:\d\d\|\w+'
+    str_notes_menu_add = message.text
+    if (re.fullmatch (reg, str_notes_menu_add)):
+        str_date = str_notes_menu_add.split("|")[0]
+        str_content = str_notes_menu_add.split("|")[1]
+        try:
+            sql = "INSERT INTO _test (date_time, content) VALUE (%s, %s)"
+            val = (str_date, str_content)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            bot.send_message(message.from_user.id, "+")
+        except:
+            bot.send_message(message.from_user.id, "-")
+    else:
+        bot.send_message(message.from_user.id, "-")
 
 ################################# РЕГИСТРАЦИЯ #################################
 
