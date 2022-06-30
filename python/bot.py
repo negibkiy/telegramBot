@@ -3,7 +3,6 @@ import telebot
 import mysql.connector
 from connect import host, user, password, database
 from telebot import types
-import mysql.connector
 
 # connection_db = mysql.connector.connect(user=user, password=password, host=host, database=database)  # подключение к БД
 
@@ -17,6 +16,8 @@ bot = telebot.TeleBot(BOT_TOKEN)      # подключение к telegram-бо�
 def start(message):
     message_id = message.from_user.id
     back_to_main(message_id)
+
+
 
 @bot.message_handler(content_types=['text'])     #  ГЛАВНАЯ ФУНКЦИЯ С КНОПКАМИ
 def event(message): 
@@ -75,6 +76,8 @@ def event(message):
         bot.send_message(message.from_user.id,"📅 Расписание", reply_markup = markup)
         bot.register_next_step_handler(message, table)
 
+
+
 @bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "РАССПИСАНИЯ"
 def table(message): 
     if message.text == 'Расписание преподавателя':     # РАСПИСАНИЕ ПРЕПОДАВАТЕЛЯ
@@ -104,8 +107,6 @@ def table(message):
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)
-
-
 
 @bot.message_handler(content_types=['text'])
 def tRas_tExm(message):
@@ -148,6 +149,7 @@ def tRas_tExm(message):
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)                              
+
 
 
 @bot.message_handler(content_types=['text'])               # НАЖАТА КНОПКА "КОРПУСА"
@@ -197,6 +199,7 @@ def build(message):
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)
+
 
 
 @bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
@@ -329,6 +332,7 @@ def web_sport(message):
         back_to_main(message_id)
 
 
+
 @bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "ОСНОВНЫЕ ПОДРАЗДЕЛЕНИЯ"
 def osn_podrazdeleniya(message):
     if message.text == 'Деканат ФЭВТ':    
@@ -338,7 +342,7 @@ def osn_podrazdeleniya(message):
         item3 = types.KeyboardButton("Рейтинговая оценка системы знаний")
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, btn_exit)
-        bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
+        bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о деканате ФЭВТ", reply_markup = markup)
         bot.register_next_step_handler(message, decanat_FEVT)
 
     if message.text == 'Библиотека':    
@@ -348,7 +352,7 @@ def osn_podrazdeleniya(message):
         item3 = types.KeyboardButton("Сайт (Библиотека)")
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, btn_exit)
-        bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
+        bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о библиотеке ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, library)   
 
     if message.text == 'Профком':    
@@ -358,8 +362,8 @@ def osn_podrazdeleniya(message):
         item3 = types.KeyboardButton("Сайт (Профком)")
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, btn_exit)
-        bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
-        bot.register_next_step_handler(message, osn_podrazdeleniya)
+        bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о профкоме ВолгГТУ", reply_markup = markup)
+        bot.register_next_step_handler(message, profkom)
 
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
@@ -388,20 +392,39 @@ def decanat_FEVT(message):
 @bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Библиотека"
 def library(message):  
     if message.text == 'Расписание (Библиотека)':
-        bot.send_message(message.chat.id, 'пн-пт 8.30-17.00 \n сб 9.00-16.00')
+        bot.send_message(message.from_user.id, 'пн-пт 8.30-17.00 \n сб 9.00-16.00')
         bot.register_next_step_handler(message, library)
 
     if message.text == 'Группа VK (Библиотека)':
-        bot.send_message(message.chat.id, 'https://vk.com/library_vstu')
+        bot.send_message(message.from_user.id, 'https://vk.com/library_vstu')
         bot.register_next_step_handler(message, library)
 
     if message.text == 'Сайт (Библиотека)':
-        bot.send_message(message.chat.id, 'http://library.vstu.ru/node/28')
+        bot.send_message(message.from_user.id, 'http://library.vstu.ru/node/28')
         bot.register_next_step_handler(message, library)
 
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)    
+
+@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Профком"
+def profkom(message):  
+    if message.text == 'Кабинет и расписание (Профком)':
+        bot.send_message(message.from_user.id, ' Кабинет: ГУК - 147 \n пн-чт 8.30-17.00 \n пт 8.30-15.00')
+        bot.register_next_step_handler(message, profkom)
+
+    if message.text == 'Группа VK (Профком)':
+        bot.send_message(message.from_user.id, 'https://vk.com/pksvstu')
+        bot.register_next_step_handler(message, profkom)
+
+    if message.text == 'Сайт (Профком)':
+        bot.send_message(message.from_user.id, 'https://www.eseur.ru/volgograd/gosudarstvennogo_tehnicheskogo__universiteta/')
+        bot.register_next_step_handler(message, profkom)
+
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)    
+
 
 
 
