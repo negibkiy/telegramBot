@@ -3,6 +3,9 @@ import telebot
 import mysql.connector
 from connect import host, user, password, database
 from telebot import types
+import mysql.connector
+
+# connection_db = mysql.connector.connect(user=user, password=password, host=host, database=database)  # подключение к БД
 
 BOT_TOKEN = "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"
              # "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"  # мой токен
@@ -27,7 +30,14 @@ def event(message):
         bot.send_message(message.from_user.id, "Хай")
 
     if message.text == '🚁 Основные подразделения':
-        bot.send_message(message.from_user.id, "Хай")
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Деканат ФЭВТ")
+        item2 = types.KeyboardButton("Библиотека")
+        item3 = types.KeyboardButton("Профком")
+        btn_exit = types.KeyboardButton("В главное меню")
+        markup.add(item1, item2, item3, btn_exit)
+        bot.send_message(message.from_user.id,"🚁 Основные подразделения", reply_markup = markup)
+        bot.register_next_step_handler(message, osn_podrazdeleniya)        
 
     if message.text == '📂 Полезные ссылки':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -240,7 +250,7 @@ def website(message):
         message_id = message.from_user.id
         back_to_main(message_id)
 
-@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
+@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "Сайты ВолгГТУ"
 def web_vstu(message):
     if message.text == 'edu':
          bot.send_message(message.chat.id, 'http://edu.vstu.ru/')
@@ -268,7 +278,7 @@ def web_vstu(message):
         message_id = message.from_user.id
         back_to_main(message_id)
   
-@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
+@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "Вспомогательные"
 def web_useful(message):
     if message.text == 'Diagrams.net':
          bot.send_message(message.chat.id, 'https://app.diagrams.net/')
@@ -305,7 +315,7 @@ def web_useful(message):
         message_id = message.from_user.id
         back_to_main(message_id)
 
-@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
+@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "Спорт"
 def web_sport(message):    
     if message.text == 'Отдел спорта ВолгГТУ':
         bot.send_message(message.chat.id, 'https://www.vstu.ru/student/studencheskaya-zhizn/sportivnaya-deyatelnost/')
@@ -317,9 +327,79 @@ def web_sport(message):
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
         message_id = message.from_user.id
         back_to_main(message_id)
+
+
+@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "ОСНОВНЫЕ ПОДРАЗДЕЛЕНИЯ"
+def osn_podrazdeleniya(message):
+    if message.text == 'Деканат ФЭВТ':    
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Расписание и кабинет (Деканат ФЭВТ)")
+        item2 = types.KeyboardButton("Группа VK (Деканат ФЭВТ)")
+        item3 = types.KeyboardButton("Рейтинговая оценка системы знаний")
+        btn_exit = types.KeyboardButton("В главное меню")
+        markup.add(item1, item2, item3, btn_exit)
+        bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
+        bot.register_next_step_handler(message, decanat_FEVT)
+
+    if message.text == 'Библиотека':    
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Расписание и кабинет (Библиотека)")
+        item2 = types.KeyboardButton("Группа VK (Библиотека)")
+        item3 = types.KeyboardButton("Сайт (Библиотека)")
+        btn_exit = types.KeyboardButton("В главное меню")
+        markup.add(item1, item2, item3, btn_exit)
+        bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
+        bot.register_next_step_handler(message, library)   
+
+    if message.text == 'Профком':    
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Кабинет и расписание (Профком)")
+        item2 = types.KeyboardButton("Группа VK (Профком)")
+        item3 = types.KeyboardButton("Сайт (Профком)")
+        btn_exit = types.KeyboardButton("В главное меню")
+        markup.add(item1, item2, item3, btn_exit)
+        bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
+        bot.register_next_step_handler(message, osn_podrazdeleniya)
+
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)         
+
+@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Деканат ФЭВТ"
+def decanat_FEVT(message):
+    if message.text == 'Расписание и кабинет (Деканат ФЭВТ)':
+        img = open('img/decanat_FEVT/grafic_rabot.jpg', 'rb')
+        bot.send_photo(message.from_user.id, img)        
+        bot.register_next_step_handler(message, decanat_FEVT)
+
+    if message.text == 'Группа VK (Деканат ФЭВТ)':
+        bot.send_message(message.chat.id, 'https://vk.com/club193491114')
+        bot.register_next_step_handler(message, decanat_FEVT)
     
+    if message.text == 'Рейтинговая оценка системы знаний':
+        img = open('img/decanat_FEVT/reyting_ocenka.jpg', 'rb')
+        bot.send_photo(message.from_user.id, img)        
+        bot.register_next_step_handler(message, decanat_FEVT)
+
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)
+
+@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Библиотека"
+def library(message):  
 
 
+    if message.text == 'Группа VK (Библиотека)':
+        bot.send_message(message.chat.id, 'https://vk.com/library_vstu')
+        bot.register_next_step_handler(message, library)
+
+    if message.text == 'Сайт (Библиотека)':
+        bot.send_message(message.chat.id, 'http://library.vstu.ru/node/28')
+        bot.register_next_step_handler(message, library)
+
+    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+        message_id = message.from_user.id
+        back_to_main(message_id)    
 
 
 
