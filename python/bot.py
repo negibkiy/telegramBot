@@ -46,7 +46,7 @@ def event(message):
         item2 = types.KeyboardButton("Зарегистрироваться")
         markup.add(item1, item2)
         bot.send_message(message.from_user.id,"🕒 Заметки!", reply_markup = markup)
-        bot.register_next_step_handler(message, notes_reg)
+        bot.register_next_step_handler(message, notes_choice)
         # try:
         #     sql = "INSERT INTO webcites (webcite_name, webcite_link) VALUE (%s, %s)"
         #     val = (User._name, User._link)
@@ -158,16 +158,16 @@ def table(message):
 ################################# РЕГИСТРАЦИЯ #################################
 
 @bot.message_handler(content_types=['text'])
-def notes_reg(message): 
+def notes_choice(message): 
     if message.text == 'Войти в аккаунт':
         bot.send_message(message.from_user.id, "Введите пароль")
-        bot.register_next_step_handler(message, notes_pass2)
+        bot.register_next_step_handler(message, notes_pass_enter)
     if message.text == 'Зарегистрироваться':
         bot.send_message(message.from_user.id, "Чтобы зарегистрироваться введите пароль")
-        bot.register_next_step_handler(message, notes_pass)
+        bot.register_next_step_handler(message, notes_pass_reg)
 
 @bot.message_handler(content_types=['text'])
-def notes_pass(message): 
+def notes_pass_reg(message): 
         User.idusers = message.from_user.id
         User.password = message.text
         try:
@@ -175,28 +175,28 @@ def notes_pass(message):
             val = (User.idusers, User.password)
             mycursor.execute(sql, val)
             mydb.commit()
-            bot.register_next_step_handler(message, notes)
+            notes_btn(message)
         except:
             bot.send_message(message.from_user.id, "Вы уже зарегистрированы")
 
 @bot.message_handler(content_types=['text'])
-def notes_pass2(message): 
+def notes_pass_enter(message): 
         User.idusers = message.from_user.id
         User.password = message.text
-        sql = "SELECT idusers, passwords FROM _users WHERE idusers = %s AND passwords = %s"
-        val = (User.idusers, User.password)
-        mycursor.execute(sql, val)
-        exist = mycursor.fetchall()
-        if len(exist) == 1 :
-            bot.send_message(message.from_user.id, "есть совпадение")
-            bot.register_next_step_handler(message, notes)
-        else:
-            bot.send_message(message.from_user.id, "Неверный пароль, либо не зарегистрированы")
+        try:
+            sql = "SELECT idusers, passwords FROM _users WHERE idusers = %s AND passwords = %s"
+            val = (User.idusers, User.password)
+            mycursor.execute(sql, val)
+            exist = mycursor.fetchall()
+            if len(exist) == 1 :
+                bot.send_message(message.from_user.id, "Вы вошли в аккаунт")
+                notes_btn(message)
+            else:
+                bot.send_message(message.from_user.id, "Неверный пароль, либо вы не зарегистрированы")
+        except:
+            bot.send_message(message.from_user.id, "Неправильный пароль")
 
-
-
-@bot.message_handler(content_types=['text'])
-def notes(message):
+def notes_btn(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить заметку")
     item2 = types.KeyboardButton("Удалить заметку")
@@ -209,13 +209,34 @@ def notes(message):
 def notes_menu(message):
     if message.text == 'Добавить заметку':
         bot.register_next_step_handler(message, notes_menu_add)
+        bot.send_message(message.from_user.id, "Добавить заметку")
+        bot.send_message(message.from_user.id, "Что добавить заметку нужно ввести ее по определенному шаблону (ГГГГ-ММ-ДД ЧЧ:ММ|содержание заметки)\nУчтите пробелы!")
     if message.text == 'Удалить заметку':
-        bot.register_next_step_handler(message, tRas_tExm)
+        bot.register_next_step_handler(message, notes_menu_delete)
+        notes_delete_on_date(message)
+        try:
+            bot.send_message(message.from_user.id, "Список ваших заметок:")
+            mycursor.execute('SELECT idtest, date_time, content FROM _test ORDER BY date_time')
+            for result in mycursor.fetchall():
+                my_list = []
+                my_list.append('⭐')
+                for x in result:
+                    my_list.append(''.join(str(x)))
+                result = ' | '.join(my_list)
+                bot.send_message(message.from_user.id, result)
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, notes_menu)
+        bot.send_message(message.from_user.id, "Удалить заметку")
+        bot.send_message(message.from_user.id, "Что удалить заметку нужно ввести ее номер (ID)")
     if message.text == 'Вывести все заметки':
-        bot.register_next_step_handler(message, tRas_tExm)
+        bot.send_message(message.from_user.id, "Вывести все заметки")
+        notes_menu_getall(message)
+
 
 @bot.message_handler(content_types=['text'])
 def notes_menu_add(message):
+    notes_delete_on_date(message)
     reg ='\d{4}-\d\d-\d\d \d\d:\d\d\|\w+'
     str_notes_menu_add = message.text
     if (re.fullmatch (reg, str_notes_menu_add)):
@@ -226,13 +247,55 @@ def notes_menu_add(message):
             val = (str_date, str_content)
             mycursor.execute(sql, val)
             mydb.commit()
-            bot.send_message(message.from_user.id, "+")
+            bot.send_message(message.from_user.id, "Ваша заметка успешно добавлена:")
+            notes_menu_getall(message)
+            bot.register_next_step_handler(message, notes_menu)
         except:
-            bot.send_message(message.from_user.id, "-")
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, notes_menu)
     else:
-        bot.send_message(message.from_user.id, "-")
+        bot.send_message(message.from_user.id, "Что-то пошло не так")    
+        bot.register_next_step_handler(message, notes_menu)
 
-################################# РЕГИСТРАЦИЯ #################################
+
+@bot.message_handler(content_types=['text'])
+def notes_menu_delete(message):
+    notes_delete_on_date(message)
+    str_delete = message.text
+    try:
+        sql = "DELETE FROM _test WHERE idtest = " + str_delete
+        mycursor.execute(sql)
+        mydb.commit()
+        bot.send_message(message.from_user.id, "Ваша заметка успешно удалена:")
+        notes_menu_getall(message)
+    except:
+        bot.send_message(message.from_user.id, "Что-то пошло не так")
+
+
+def notes_menu_getall(message):
+    notes_delete_on_date(message)
+    try:
+        bot.send_message(message.from_user.id, "Список ваших заметок:")
+        mycursor.execute('SELECT idtest, date_time, content FROM _test ORDER BY date_time')
+        for result in mycursor.fetchall():
+            my_list = []
+            my_list.append('📌')
+            for x in result:
+                my_list.append(''.join(str(x)))
+            result = ' | '.join(my_list)
+            bot.send_message(message.from_user.id, result)
+        bot.register_next_step_handler(message, notes_menu)
+    except:
+        bot.send_message(message.from_user.id, "Что-то пошло не так")
+        bot.register_next_step_handler(message, notes_menu)
+
+def notes_delete_on_date(message):
+    try:
+        mycursor.execute('DELETE FROM _test WHERE date_time < NOW()')
+        mydb.commit()
+    except:
+        bot.send_message(message.from_user.id, "Что-то пошло не так")
+##################################################################
 
 
 @bot.message_handler(content_types=['text'])
