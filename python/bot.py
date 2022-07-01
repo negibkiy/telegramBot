@@ -265,8 +265,7 @@ def osn_podrazdeleniya(message):
 @bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Деканат ФЭВТ"
 def decanat_FEVT(message):
     if message.text == 'Расписание и кабинет (Деканат ФЭВТ)':
-        img = open('img/decanat_FEVT/grafic_rabot.jpg', 'rb')
-        bot.send_photo(message.from_user.id, img)        
+        bot.send_message(message.chat.id, '  Кабинет: В - 1207\nГрафик работы со студентами:\n\n пн-пт 11.00-12.30\n            13.00-15.00')
         bot.register_next_step_handler(message, decanat_FEVT)
 
     if message.text == 'Группа VK (Деканат ФЭВТ)':
@@ -274,8 +273,9 @@ def decanat_FEVT(message):
         bot.register_next_step_handler(message, decanat_FEVT)
     
     if message.text == 'Рейтинговая оценка системы знаний':
-        img = open('img/decanat_FEVT/reyting_ocenka.jpg', 'rb')
-        bot.send_photo(message.from_user.id, img)        
+        bot.send_message(message.chat.id, (('  Оценки в зависимости от баллов:\n\n'
+            ' 5 - 90 - 100 баллов\n 4 - 76 - 89 баллов\n 3 - 61 - 75 баллов\n 2 - менее 60-ти баллов\n\n'
+            ' К итоговой аттестации допускаются\n студенты, набравшие по изучаемой\n дисциплине 40 - 60 баллов за семестр')))
         bot.register_next_step_handler(message, decanat_FEVT)
 
     if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
@@ -404,6 +404,9 @@ def choice_website(choice_group, message):        # функция для выб
     return link     
 
 
+def choice_osn_podrazdeleniya(message):        # функция для выбора основных подразделений
+    info = 'https://vk.com/club193491114'
+    return info  
 
 
 
