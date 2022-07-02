@@ -6,7 +6,7 @@ from connect import host, user, password, database
 from telebot import types
 import connect  # подключение файла коннект для подключения к БД
 
-from back_to_main import back_to_main
+from back_to_main import back_to_main  # подключение файла с функцией возврата в главное меню
 
 # connection_db = mysql.connector.connect(user=user, password=password, host=host, database=database)  # подключение к БД
 
@@ -20,8 +20,8 @@ bot = telebot.TeleBot(BOT_TOKEN)      # подключение к telegram-бо�
 def start(message):
     bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
 
-
-@bot.message_handler(content_types=['text'])     #  ГЛАВНАЯ ФУНКЦИЯ С КНОПКАМИ
+#--------------------------------------------------------- ГЛАВНАЯ ФУНКЦИЯ С КНОПКАМИ ------------------------------------------------------
+@bot.message_handler(content_types=['text'])    
 def event(message): 
     if message.text == '🚲 Мероприятия':
         bot.send_message(message.from_user.id, "Хай")
@@ -77,25 +77,25 @@ def event(message):
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"📅 Расписание", reply_markup = markup)
         bot.register_next_step_handler(message, table)
+#-------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "РАССПИСАНИЯ"
+#--------------------------------------------------------- РАССПИСАНИЯ ---------------------------------------------------------------------
+@bot.message_handler(content_types=['text'])        
 def table(message): 
-    if message.text == 'Расписание преподавателя':     # РАСПИСАНИЕ ПРЕПОДАВАТЕЛЯ
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    if message.text == 'Расписание преподавателя':     
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         item1 = types.KeyboardButton("преподавателя")
         markup.add(item1)
         bot.send_message(message.from_user.id,"'Расписание преподавателя", reply_markup = markup)
     
-    if message.text == 'Расписание звонков':         # ЗВОНКИ
+    if message.text == 'Расписание звонков':         
         img = open('img/table_ring/ring.jpg', 'rb')
         bot.send_photo(message.from_user.id, img)
         bot.register_next_step_handler(message, table)
 
     if message.text == 'Расписание занятий' or message.text == 'Расписание экзаменов':                      # РАСПИСАНИЕ ЗАНЯТИЙ или ЭКЗАМЕНОВ
         global choice 
-        choice = message.text    # глобальная переменная для выбора между "расписанием экзхаменов" или "расписанием занятий"
+        choice = message.text                # глобальная переменная для выбора между "расписанием экзхаменов" или "расписанием занятий"
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("1 Курс")
         item2 = types.KeyboardButton("2 Курс")
@@ -104,68 +104,38 @@ def table(message):
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
-        bot.register_next_step_handler(message, tRas_tExm)
+        bot.register_next_step_handler(message, choice_table)
 
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if message.text == 'В главное меню':          # выполняется переход в главное меню
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
 
-@bot.message_handler(content_types=['text'])
-def tRas_tExm(message):
-    if message.text == '1 Курс' and choice == 'Расписание занятий':
-        doc = open('document/table_default/1_kurs_raspisanie_zanyatiy.xlsx', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)
-    elif message.text == '1 Курс' and choice == 'Расписание экзаменов':
-        doc = open('document/table_exm/1_kurs_raspisanie_exams.xls', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)        
-
-    if message.text == '2 Курс' and choice == 'Расписание занятий':
-        doc = open('document/table_default/2_kurs_raspisanie_zanyatiy.xls', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)
-    elif message.text == '2 Курс' and choice == 'Расписание экзаменов':
-        doc = open('document/table_exm/2_kurs_raspisanie_exams.xls', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm) 
-
-    if message.text == '3 Курс' and choice == 'Расписание занятий':
-        doc = open('document/table_default/3_kurs_raspisanie_zanyatiy.xls', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)
-    elif message.text == '3 Курс' and choice == 'Расписание экзаменов':
-        doc = open('document/table_exm/3_kurs_raspisanie_exams.xls', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)          
-
-    if message.text == '4 Курс' and choice == 'Расписание занятий':
-        doc = open('document/table_default/4_kurs_raspisanie_zanyatiy.xls', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)
-    elif message.text == '4 Курс' and choice == 'Расписание экзаменов':
-        doc = open('document/table_exm/4_kurs_raspisanie_exams.xls', 'rb')
-        bot.send_document(message.from_user.id, doc)       
-        bot.register_next_step_handler(message, tRas_tExm)
-
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
-        bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())                            
-
-
-@bot.message_handler(content_types=['text'])               # НАЖАТА КНОПКА "КОРПУСА"
-def build(message):
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+@bot.message_handler(content_types=['text'])                # функция для вызова функции с выбором таблицы с расписанием
+def choice_table(message):
+    if message.text == 'В главное меню':          # выполняется переход в главное меню
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.я", reply_markup = back_to_main())
     else:
-        name, address = choice_build (message)     # вызывается функция для выбора корпуса
+        way_to_tablea = choice_tRas_tExm (choice, message)     # вызывается функция для выбора расписания
+        doc = open(f'{way_to_tablea.title()}', 'rb')
+        bot.send_document(message.from_user.id, doc)           
+        bot.register_next_step_handler(message, choice_table)                 
+#-------------------------------------------------------------------------------------------------------------------------------------------
+
+#-------------------------------------------------------------------------------------------------------------------------------------------
+@bot.message_handler(content_types=['text'])               # НАЖАТА КНОПКА "КОРПУСА"
+def build(message):
+    if message.text == 'В главное меню':         # выполняется переход в главное меню
+        bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.я", reply_markup = back_to_main())
+    else:
+        name, address = choice_build (message)          # вызывается функция для выбора корпуса
         img = open(f'img/builds/{name.title()}', 'rb')
         bot.send_photo(message.from_user.id, img)           
         bot.send_message(message.chat.id, f'{address.title()}')
         bot.register_next_step_handler(message, build)
+#-------------------------------------------------------------------------------------------------------------------------------------------
 
-
-@bot.message_handler(content_types=['text'])      # НАЖАТА КНОПКА "ПОЛЕЗНЫЕ ССЫЛКИ"
+#--------------------------------------------------------- ПОЛЕЗНЫЕ ССЫЛКИ -----------------------------------------------------------------
+@bot.message_handler(content_types=['text'])      
 def website(message):
-
     global choice 
     choice = message.text  # какой полезный ресурс нужен
 
@@ -214,21 +184,25 @@ def website(message):
         bot.send_photo(message.from_user.id, img)     
         bot.register_next_step_handler(message, website)
 
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if message.text == 'В главное меню':          # выполняется переход в главное меню 
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
 
 @bot.message_handler(content_types=['text'])      # функция для вызова функции с выбором полезной ссылки ссылки
 def useful_links(message):
-    if message.text == 'В главное меню' or choice == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if message.text == 'В главное меню' or choice == 'В главное меню':          # выполняется переход в главное меню
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
     else:
         link = choice_website(choice, message)
         bot.send_message(message.chat.id, link)
         bot.register_next_step_handler(message, useful_links)
+#-------------------------------------------------------------------------------------------------------------------------------------------
 
-
-@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "ОСНОВНЫЕ ПОДРАЗДЕЛЕНИЯ"
+#--------------------------------------------------------- ОСНОВНЫЕ ПОДРАЗДЕЛЕНИЯ ----------------------------------------------------------
+@bot.message_handler(content_types=['text'])      
 def osn_podrazdeleniya(message):
+    global choice 
+    choice = message.text  # какое основное подразделение нас интересует
+
     if message.text == 'Деканат ФЭВТ':    
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Расписание и кабинет (Деканат ФЭВТ)")
@@ -237,7 +211,7 @@ def osn_podrazdeleniya(message):
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, btn_exit)
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о деканате ФЭВТ", reply_markup = markup)
-        bot.register_next_step_handler(message, decanat_FEVT)
+        bot.register_next_step_handler(message, info_about_podrazdelenie)
 
     if message.text == 'Библиотека':    
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -247,7 +221,7 @@ def osn_podrazdeleniya(message):
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, btn_exit)
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о библиотеке ВолгГТУ", reply_markup = markup)
-        bot.register_next_step_handler(message, library)   
+        bot.register_next_step_handler(message, info_about_podrazdelenie)   
 
     if message.text == 'Профком':    
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -257,63 +231,22 @@ def osn_podrazdeleniya(message):
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, btn_exit)
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о профкоме ВолгГТУ", reply_markup = markup)
-        bot.register_next_step_handler(message, profkom)
+        bot.register_next_step_handler(message, info_about_podrazdelenie)
 
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if message.text == 'В главное меню':          # выполняется переход в главное меню
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())        
 
-@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Деканат ФЭВТ"
-def decanat_FEVT(message):
-    if message.text == 'Расписание и кабинет (Деканат ФЭВТ)':
-        bot.send_message(message.chat.id, '  Кабинет: В - 1207\nГрафик работы со студентами:\n\n пн-пт 11.00-12.30\n            13.00-15.00')
-        bot.register_next_step_handler(message, decanat_FEVT)
-
-    if message.text == 'Группа VK (Деканат ФЭВТ)':
-        bot.send_message(message.chat.id, 'https://vk.com/club193491114')
-        bot.register_next_step_handler(message, decanat_FEVT)
-    
-    if message.text == 'Рейтинговая оценка системы знаний':
-        bot.send_message(message.chat.id, (('  Оценки в зависимости от баллов:\n\n'
-            ' 5 - 90 - 100 баллов\n 4 - 76 - 89 баллов\n 3 - 61 - 75 баллов\n 2 - менее 60-ти баллов\n\n'
-            ' К итоговой аттестации допускаются\n студенты, набравшие по изучаемой\n дисциплине 40 - 60 баллов за семестр')))
-        bot.register_next_step_handler(message, decanat_FEVT)
-
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+@bot.message_handler(content_types=['text'])      # функция для вызова функции с выбором информации о основных подразделениях
+def info_about_podrazdelenie(message):
+    if message.text == 'В главное меню' or choice == 'В главное меню':          # выполняется переход в главное меню
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
+    else:
+        info = choice_osn_podrazdeleniya(choice, message)
+        bot.send_message(message.chat.id, info)
+        bot.register_next_step_handler(message, info_about_podrazdelenie)
+#-------------------------------------------------------------------------------------------------------------------------------------------
 
-@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Библиотека"
-def library(message):  
-    if message.text == 'Расписание (Библиотека)':
-        bot.send_message(message.from_user.id, 'пн-пт 8.30-17.00 \n сб 9.00-16.00')
-        bot.register_next_step_handler(message, library)
 
-    if message.text == 'Группа VK (Библиотека)':
-        bot.send_message(message.from_user.id, 'https://vk.com/library_vstu')
-        bot.register_next_step_handler(message, library)
-
-    if message.text == 'Сайт (Библиотека)':
-        bot.send_message(message.from_user.id, 'http://library.vstu.ru/node/28')
-        bot.register_next_step_handler(message, library)
-
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
-        bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
-
-@bot.message_handler(content_types=['text'])         # НАЖАТА КНОПКА "Профком"
-def profkom(message):  
-    if message.text == 'Кабинет и расписание (Профком)':
-        bot.send_message(message.from_user.id, ' Кабинет: ГУК - 147 \n пн-чт 8.30-17.00 \n пт 8.30-15.00')
-        bot.register_next_step_handler(message, profkom)
-
-    if message.text == 'Группа VK (Профком)':
-        bot.send_message(message.from_user.id, 'https://vk.com/pksvstu')
-        bot.register_next_step_handler(message, profkom)
-
-    if message.text == 'Сайт (Профком)':
-        bot.send_message(message.from_user.id, 'https://www.eseur.ru/volgograd/gosudarstvennogo_tehnicheskogo__universiteta/')
-        bot.register_next_step_handler(message, profkom)
-
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
-        bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main()) 
 
 
 def choice_build(message):                         # функция для выбора корпуса
@@ -345,7 +278,7 @@ def choice_build(message):                         # функция для вы�
         name = 'Krasnoarmeyskiy.png'
         address = 'Красноармейский учебный корпус. Адрес: Волгоград, проспект Столетова, 8'
 
-    if message.text == 'В главное меню':          # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if message.text == 'В главное меню':          # выполняется переход в главное меню
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())          
     
     return name, address
@@ -398,15 +331,71 @@ def choice_website(choice_group, message):        # функция для выб
         if choice_group == 'Спорт' and choice_website == 'Студенческий спортивный клуб ВолгГТУ (Группа VK)':
             link = 'https://vk.com/public180881363'
 
-    if choice_group == 'В главное меню' or choice_website == 'В главное меню' or message.text == 'В главное меню':  # ВЫПОЛНЯЕТСЯ ПЕРЕХОД В ГЛАВНОЕ МЕНЮ
+    if choice_group == 'В главное меню' or choice_website == 'В главное меню' or message.text == 'В главное меню':  # выполняется переход в главное меню
         bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
     
     return link     
 
+def choice_osn_podrazdeleniya(choice_podrazdelenie, message):        # функция для выбора основных подразделений
+    choice_info = message.text
 
-def choice_osn_podrazdeleniya(message):        # функция для выбора основных подразделений
-    info = 'https://vk.com/club193491114'
+    if choice_podrazdelenie == 'Деканат ФЭВТ':    # если выбрана "Спорт"
+        if message.text == 'Расписание и кабинет (Деканат ФЭВТ)':
+            info = '  Кабинет: В - 1207\nГрафик работы со студентами:\n\n пн-пт 11.00-12.30\n            13.00-15.00'
+        if message.text == 'Группа VK (Деканат ФЭВТ)':
+            info = 'https://vk.com/club193491114'
+        if message.text == 'Рейтинговая оценка системы знаний':
+            info = '  Оценки в зависимости от баллов:\n\n5 - 90 - 100 баллов\n 4 - 76 - 89 баллов\n 3 - 61 - 75 баллов\n 2 - менее 60-ти баллов\n\n К итоговой аттестации допускаются\n студенты, набравшие по изучаемой\n дисциплине 40 - 60 баллов за семестр'
+
+    if choice_podrazdelenie == 'Библиотека':    # если выбрана "Спорт"
+        if message.text == 'Расписание (Библиотека)':
+            info = 'пн-пт 8.30-17.00 \n      сб 9.00-16.00'
+        if message.text == 'Группа VK (Библиотека)':
+            info = 'https://vk.com/library_vstu'
+        if message.text == 'Сайт (Библиотека)':
+            info = 'http://library.vstu.ru/node/28'
+
+    if choice_podrazdelenie == 'Профком':    # если выбрана "Спорт"
+        if message.text == 'Кабинет и расписание (Профком)':
+            info = ' Кабинет: ГУК - 147 \n пн-чт 8.30-17.00 \n       пт 8.30-15.00'
+        if message.text == 'Группа VK (Профком)':
+            info = 'https://vk.com/pksvstu'
+        if message.text == 'Сайт (Профком)':
+            info = 'https://www.eseur.ru/volgograd/gosudarstvennogo_tehnicheskogo__universiteta/'
+
+    if choice_podrazdelenie == 'В главное меню' or choice_info == 'В главное меню' or message.text == 'В главное меню':          # выполняется переход в главное меню
+        bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main()) 
+
     return info  
+
+
+def choice_tRas_tExm(choice_table, message):
+    choice_kurs = message.text
+
+    if choice_kurs == '1 Курс' and choice_table == 'Расписание занятий':      #  выбран 1 Курс
+        way_to_table = 'document/table_default/1_kurs_raspisanie_zanyatiy.xlsx'
+    elif choice_kurs == '1 Курс' and choice_table == 'Расписание экзаменов':
+        way_to_table = 'document/table_exm/1_kurs_raspisanie_exams.xls'       
+
+    if choice_kurs == '2 Курс' and choice_table == 'Расписание занятий':      #  выбран 2 Курс
+        way_to_table = 'document/table_default/2_kurs_raspisanie_zanyatiy.xls'
+    elif choice_kurs == '2 Курс' and choice_table == 'Расписание экзаменов':
+        way_to_table = 'document/table_exm/2_kurs_raspisanie_exams.xls'
+
+    if choice_kurs == '3 Курс' and choice_table == 'Расписание занятий':      #  выбран 3 Курс
+        way_to_table = 'document/table_default/3_kurs_raspisanie_zanyatiy.xls'
+    elif choice_kurs == '3 Курс' and choice_table == 'Расписание экзаменов':
+        way_to_table = 'document/table_exm/3_kurs_raspisanie_exams.xls'        
+
+    if choice_kurs == '4 Курс' and choice_table == 'Расписание занятий':      #  выбран 4 Курс
+        way_to_table = 'document/table_default/4_kurs_raspisanie_zanyatiy.xls'
+    elif choice_kurs == '4 Курс' and choice_table == 'Расписание экзаменов':
+        way_to_table = 'document/table_exm/4_kurs_raspisanie_exams.xls'
+
+    if message.text == 'В главное меню' or choice_table == 'В главное меню' or choice_kurs == 'В главное меню':          # выполняется переход в главное меню
+        bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())
+
+    return way_to_table 
 
 
 
