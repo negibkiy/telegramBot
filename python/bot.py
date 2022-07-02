@@ -1,7 +1,10 @@
+from email import iterators
 import telebot
 import mysql.connector
 import datetime
 import re
+import calendar
+from datetime import date
 from connect import host, user, password, database
 from telebot import types
 
@@ -22,7 +25,9 @@ class User:
     def __init__(self, iduser):
         self. iduser = iduser
         self. password = ' '
-    
+        self.teacher_fio = ' '
+        self.teacher_parity = ' '
+        self.teacher_day = ' '
 
 mycursor = mydb.cursor()
 
@@ -130,7 +135,14 @@ def table(message):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("преподавателя")
         markup.add(item1)
-        bot.send_message(message.from_user.id,"'Расписание преподавателя", reply_markup = markup)
+        bot.send_message(message.from_user.id,"Расписание преподавателя", reply_markup = markup)
+
+        #ДОЛЖНА БЫТЬ ФУНКЦИЯ СПИСОК ПРЕПОДАВАТЕЛЕЙ
+        teacher_fulltable(message)
+
+        bot.send_message(message.from_user.id, "Введите ФИО преподаватели из представленного списка")
+        bot.register_next_step_handler(message, table_teacher_name)
+        
     
     if message.text == 'Расписание звонков':         # ЗВОНКИ
         img = open('img/table_ring/ring.jpg', 'rb')
@@ -297,6 +309,55 @@ def notes_delete_on_date(message):
         bot.send_message(message.from_user.id, "Что-то пошло не так")
 ##################################################################
 
+##########################   Преподаватели   ##########################
+@bot.message_handler(content_types=['text'])
+def table_teacher_name(message):
+    User.teacher_fio = message.text
+    bot.send_message(message.from_user.id, "Введите четность недели")
+    bot.register_next_step_handler(message, table_teacher_parity)
+
+@bot.message_handler(content_types=['text'])
+def table_teacher_parity(message):
+    User.teacher_parity = message.text
+    bot.send_message(message.from_user.id, "Введите на какой день недели нужно расписание")
+    bot.register_next_step_handler(message, table_teacher_day)
+      
+@bot.message_handler(content_types=['text'])
+def table_teacher_day(message):
+    User.teacher_day = message.text
+    iterator = 0
+    try: 
+        sql = "select `8:30 - 10:00`,`10:10 - 11:40`, `11:50 - 13:20`, `13:40 - 15:10`, `15:20 - 16:50`, `17:00 - 18:30`, `18:35 - 20:00` from _teachers as t \
+                    join _tables as tb on t.idteachers = tb.idteachers \
+                    where table_day = (%s) and teacher_fio = (%s) and table_parity = (%s)"
+        val = (User.teacher_day, User.teacher_fio, User.teacher_parity)
+        worktime_list = ["8:30 - 10:00 ","10:10 - 11:40", "11:50 - 13:20", "13:40 - 15:10", "15:20 - 16:50", "17:00 - 18:30", "18:35 - 20:00"]
+
+        mycursor.execute(sql, val)
+        for result in mycursor.fetchall():
+            for x in result:
+                bot.send_message(message.from_user.id, worktime_list[iterator] + " | " + x)
+                iterator += 1
+        
+        bot.register_next_step_handler(message, table_teacher_day)      
+    except:
+        bot.send_message(message.from_user.id, "Что-то пошло не так")
+
+
+def teacher_fulltable(message):
+    try:
+        bot.send_message(message.from_user.id, "Список преподавателей:")
+        mycursor.execute('SELECT teacher_fio FROM _teachers')
+        for result in mycursor.fetchall():
+            my_list = []
+            for x in result:
+                my_list.append(''.join(str(x)))
+            bot.send_message(message.from_user.id, result)
+    except:
+        bot.send_message(message.from_user.id, "Что-то пошло не так")
+
+
+##################################################################
 
 @bot.message_handler(content_types=['text'])
 def tRas_tExm(message):
