@@ -1,13 +1,14 @@
+from email import message
 from telebot import types
 
 def back_to_main():                                     # ФУНКЦИЯ ДЛЯ ВЫЗОВА ГЛАВНОГО МЕНЮ
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton("🚲 Мероприятия")
+    item1 = types.KeyboardButton("💼 Мероприятия")
     item2 = types.KeyboardButton("🏢 Консультации")
-    item3 = types.KeyboardButton("🕒 Заметки")
-    item4= types.KeyboardButton("🚁 Основные подразделения")
+    item3 = types.KeyboardButton("📝 Заметки")
+    item4= types.KeyboardButton("🎓 Основные подразделения")
     item5 = types.KeyboardButton("📂 Полезные ссылки")
-    item6 = types.KeyboardButton("🏫 Корпуса") 
+    item6 = types.KeyboardButton("🏛️ Корпуса") 
     item7 = types.KeyboardButton("📅 Расписание")
     markup.add(item1, item2, item3, item4, item5, item6, item7)
     
@@ -16,10 +17,10 @@ def back_to_main():                                     # ФУНКЦИЯ ДЛЯ 
 def one_step_back(booling_word, message):
     if booling_word == 'Расписание':                            # ВЫБОР РАСПИСАНИЯ 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton("Расписание преподавателя")
-        item2 = types.KeyboardButton("Расписание экзаменов")
-        item3 = types.KeyboardButton("Расписание занятий")
-        item4 = types.KeyboardButton("Расписание звонков")
+        item1 = types.KeyboardButton("📋 Расписание преподавателя")
+        item2 = types.KeyboardButton("🗒️ Расписание экзаменов")
+        item3 = types.KeyboardButton("🗓️ Расписание занятий")
+        item4 = types.KeyboardButton("🔔 Расписание звонков")
         btn_exit = types.KeyboardButton("В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         notification = "📅 Расписание"
