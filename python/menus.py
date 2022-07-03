@@ -21,7 +21,7 @@ def one_step_back(booling_word, message):
         item2 = types.KeyboardButton("🗒️ Расписание экзаменов")
         item3 = types.KeyboardButton("🗓️ Расписание занятий")
         item4 = types.KeyboardButton("🔔 Расписание звонков")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         notification = "📅 Расписание"
     
@@ -31,7 +31,7 @@ def one_step_back(booling_word, message):
         item2 = types.KeyboardButton("Вспомогательные")
         item3 = types.KeyboardButton("Спорт")
         item4 = types.KeyboardButton("Пароли и логины для DUMP")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         notification = "📂 Полезные ссылки"      
     
@@ -40,7 +40,7 @@ def one_step_back(booling_word, message):
         item1 = types.KeyboardButton("Деканат ФЭВТ")
         item2 = types.KeyboardButton("Библиотека")
         item3 = types.KeyboardButton("Профком")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, btn_exit)
         notification = "🚁 Основные подразделения"
 

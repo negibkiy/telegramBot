@@ -29,7 +29,7 @@ def choice_build(message):                         # функция для вы�
         name = 'Krasnoarmeyskiy.png'
         address = 'Красноармейский учебный корпус. Адрес: Волгоград, проспект Столетова, 8'
 
-    if message.text == 'В главное меню' or message.text == '/start':          # выполняется переход в главное меню
+    if message.text == '⬆️ В главное меню' or message.text == '/start':          # выполняется переход в главное меню
         name = 0
         address = 0         
     
@@ -83,7 +83,7 @@ def choice_website(choice_group, message):        # функция для выб
         if choice_group == 'Спорт' and choice_website == 'Студенческий спортивный клуб ВолгГТУ (Группа VK)':
             link = 'https://vk.com/public180881363'
 
-    if choice_group == 'В главное меню' or choice_website == 'В главное меню' or message.text == 'В главное меню' or message.text == '/start':  # выполняется переход в главное меню
+    if choice_group == '⬆️ В главное меню' or choice_website == '⬆️ В главное меню' or message.text == '⬆️ В главное меню' or message.text == '/start':  # выполняется переход в главное меню
         return 0
     
     return link     
@@ -115,7 +115,7 @@ def choice_osn_podrazdeleniya(choice_podrazdelenie, message):        # функ�
         if message.text == 'Сайт (Профком)':
             info = 'https://www.eseur.ru/volgograd/gosudarstvennogo_tehnicheskogo__universiteta/'
 
-    if choice_podrazdelenie == 'В главное меню' or choice_info == 'В главное меню' or message.text == 'В главное меню' or message.text == '/start':          # выполняется переход в главное меню
+    if choice_podrazdelenie == '⬆️ В главное меню' or choice_info == '⬆️ В главное меню' or message.text == '⬆️ В главное меню' or message.text == '/start':          # выполняется переход в главное меню
         return 0
 
     return info  
@@ -144,7 +144,7 @@ def choice_tRas_tExm(choice_table, message):
     elif choice_kurs == '4 Курс' and choice_table == '🗒️ Расписание экзаменов':
         way_to_table = 'document/table_exm/4_kurs_raspisanie_exams.xls'
 
-    if message.text == 'В главное меню' or choice_table == 'В главное меню' or choice_kurs == 'В главное меню' or message.text == '/start' :          # выполняется переход в главное меню
+    if message.text == '⬆️ В главное меню' or choice_table == '⬆️ В главное меню' or choice_kurs == '⬆️ В главное меню' or message.text == '/start' :          # выполняется переход в главное меню
         return 0
 
     return way_to_table 

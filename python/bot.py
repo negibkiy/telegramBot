@@ -44,7 +44,7 @@ def event(message):
         item1 = types.KeyboardButton("Деканат ФЭВТ")
         item2 = types.KeyboardButton("Библиотека")
         item3 = types.KeyboardButton("Профком")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, btn_exit)
         bot.send_message(message.from_user.id,"🚁 Основные подразделения", reply_markup = markup)
         bot.register_next_step_handler(message, osn_podrazdeleniya)        
@@ -55,7 +55,7 @@ def event(message):
         item2 = types.KeyboardButton("Вспомогательные")
         item3 = types.KeyboardButton("Спорт")
         item4 = types.KeyboardButton("Пароли и логины для DUMP")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"📂 Полезные ссылки", reply_markup = markup)
         bot.register_next_step_handler(message, website)
@@ -69,7 +69,7 @@ def event(message):
         item5 = types.KeyboardButton("Кировский учебный корпус")
         item6 = types.KeyboardButton("Красноармейский учебный корпус")
         item7 = types.KeyboardButton("Тракторный учебный корпус")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, btn_exit)
         bot.send_message(message.from_user.id,"🏫 Корпуса", reply_markup = markup)
         bot.register_next_step_handler(message, build)
@@ -80,13 +80,15 @@ def event(message):
         item2 = types.KeyboardButton("🗒️ Расписание экзаменов")
         item3 = types.KeyboardButton("🗓️ Расписание занятий")
         item4 = types.KeyboardButton("🔔 Расписание звонков")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"📅 Расписание", reply_markup = markup)
         bot.register_next_step_handler(message, table)
     
     if message.text == '/start':
-        start(message) 
+        start(message)
+    if message.text == '/about':
+        about(message) 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------- РАССПИСАНИЯ ---------------------------------------------------------------------
@@ -112,18 +114,22 @@ def table(message):
         item3 = types.KeyboardButton("3 Курс")
         item4 = types.KeyboardButton("4 Курс")
         item5 = types.KeyboardButton("⬅️ Назад")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, item5, btn_exit)
         bot.send_message(message.from_user.id,"Выберите курс", reply_markup = markup)
         bot.register_next_step_handler(message, choice_table)
 
-    if message.text == 'В главное меню' or message.text == '/start':          # выполняется переход в главное меню
+    if message.text == '⬆️ В главное меню' or message.text == '/start':          # выполняется переход в главное меню
         start(message)
- 
+    if message.text == '/about':
+        about(message) 
+
 @bot.message_handler(content_types=['text'])                # функция для вызова функции с выбором таблицы с расписанием
 def choice_table(message):
-    if message.text == 'В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+    if message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
         start(message)
+    elif message.text == '/about':
+        about(message) 
     elif message.text == '⬅️ Назад':          # выполняется переход в главное меню
         markup, notification  = one_step_back('Расписание', message)
         bot.send_message(message.from_user.id, notification, reply_markup = markup)
@@ -141,8 +147,10 @@ def choice_table(message):
 #-------------------------------------------------------------------------------------------------------------------------------------------
 @bot.message_handler(content_types=['text'])               # НАЖАТА КНОПКА "КОРПУСА"
 def build(message):
-    if message.text == 'В главное меню' or message.text == '/start':         # выполняется переход в главное меню
+    if message.text == '⬆️ В главное меню' or message.text == '/start':         # выполняется переход в главное меню
         start(message)
+    elif message.text == '/about':
+        about(message) 
     else:
         name, address = choice_build (message)          # вызывается функция для выбора корпуса
         if name != 0 and address != 0:
@@ -170,7 +178,7 @@ def website(message):
         item6 = types.KeyboardButton("Библиотека")
         item7 = types.KeyboardButton("Деканат ФЭВТ (VK группа)")
         item8 = types.KeyboardButton("⬅️ Назад")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, item8, btn_exit)
         bot.send_message(message.from_user.id,"Основные официальные сайты и группы ФЭВТ ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, useful_links)
@@ -188,7 +196,7 @@ def website(message):
         item9 = types.KeyboardButton("Определитель матрицы онлайн") 
         item10 = types.KeyboardButton("GeoGebra")
         item11 = types.KeyboardButton("⬅️ Назад")        
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, item8, item9,  item10, item11, btn_exit)
         bot.send_message(message.from_user.id,"Сайты для помощи студентам ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, useful_links)      
@@ -198,7 +206,7 @@ def website(message):
         item1 = types.KeyboardButton("Отдел спорта ВолгГТУ")
         item2 = types.KeyboardButton("Студенческий спортивный клуб ВолгГТУ (Группа VK)")
         item3 = types.KeyboardButton("⬅️ Назад")   
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, btn_exit)
         bot.send_message(message.from_user.id,"Сайты и группы, посвященные спорту ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, useful_links) 
@@ -208,13 +216,17 @@ def website(message):
         bot.send_photo(message.from_user.id, img)     
         bot.register_next_step_handler(message, website)
 
-    if message.text == 'В главное меню'  or message.text == '/start':          # выполняется переход в главное меню 
+    if message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню 
         start(message)
+    if message.text == '/about':
+        about(message) 
 
 @bot.message_handler(content_types=['text'])      # функция для вызова функции с выбором полезной ссылки ссылки
 def useful_links(message):
-    if message.text == 'В главное меню' or message.text ==  '/start' or choice == 'В главное меню':          # выполняется переход в главное меню
+    if message.text == '⬆️ В главное меню' or message.text ==  '/start' or choice == '⬆️ В главное меню':          # выполняется переход в главное меню
         start(message)
+    elif message.text == '/about':
+        about(message) 
     elif message.text == '⬅️ Назад':          # выполняется переход в главное меню
         markup, notification  = one_step_back('Полезные ссылки', message)
         bot.send_message(message.from_user.id, notification, reply_markup = markup)
@@ -240,7 +252,7 @@ def osn_podrazdeleniya(message):
         item2 = types.KeyboardButton("Группа VK (Деканат ФЭВТ)")
         item3 = types.KeyboardButton("Рейтинговая оценка системы знаний")
         item4 = types.KeyboardButton("⬅️ Назад")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о деканате ФЭВТ", reply_markup = markup)
         bot.register_next_step_handler(message, info_about_podrazdelenie)
@@ -251,7 +263,7 @@ def osn_podrazdeleniya(message):
         item2 = types.KeyboardButton("Группа VK (Библиотека)")
         item3 = types.KeyboardButton("Сайт (Библиотека)")
         item4 = types.KeyboardButton("⬅️ Назад")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о библиотеке ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, info_about_podrazdelenie)   
@@ -262,18 +274,22 @@ def osn_podrazdeleniya(message):
         item2 = types.KeyboardButton("Группа VK (Профком)")
         item3 = types.KeyboardButton("Сайт (Профком)")
         item4 = types.KeyboardButton("⬅️ Назад")
-        btn_exit = types.KeyboardButton("В главное меню")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о профкоме ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, info_about_podrazdelenie)
 
-    if message.text == 'В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
-        bot.send_message(message.from_user.id,"Здравствуйте, я - информационный бот VSTU для помощи студентам.", reply_markup = back_to_main())        
+    if message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+        start(message)
+    if message.text == '/about':
+        about(message)         
 
 @bot.message_handler(content_types=['text'])      # функция для вызова функции с выбором информации о основных подразделениях
 def info_about_podrazdelenie(message):
-    if message.text == 'В главное меню'  or message.text ==  '/start' or choice == 'В главное меню':          # выполняется переход в главное меню
+    if message.text == '⬆️ В главное меню'  or message.text ==  '/start' or choice == '⬆️ В главное меню':          # выполняется переход в главное меню
         start(message)
+    elif message.text == '/about':
+        about(message) 
     elif message.text == '⬅️ Назад':          # выполняется переход в главное меню
         markup, notification  = one_step_back('Основные подразделения', message)
         bot.send_message(message.from_user.id, notification, reply_markup = markup)
