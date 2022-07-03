@@ -1,12 +1,13 @@
 from email import iterators
 import telebot
 import mysql.connector
-import datetime
 import re
-import calendar
-from datetime import date
+
+import telegram
 from connect import host, user, password, database
 from telebot import types
+from notifiers import get_notifier
+import time
 
 BOT_TOKEN = "5581837086:AAFqDJgaaDop64v4cHA7HehlL08RNh-dTFU"
              # "5525229543:AAF5zhi0s34PWgg0x3ufwdEAnxrrgCCLpjY"  # мой токен
@@ -190,6 +191,7 @@ def notes_pass_reg(message):
             notes_btn(message)
         except:
             bot.send_message(message.from_user.id, "Вы уже зарегистрированы")
+            bot.register_next_step_handler(message, notes_choice)
 
 @bot.message_handler(content_types=['text'])
 def notes_pass_enter(message): 
@@ -208,6 +210,7 @@ def notes_pass_enter(message):
         except:
             bot.send_message(message.from_user.id, "Неправильный пароль")
 
+
 def notes_btn(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить заметку")
@@ -222,44 +225,55 @@ def notes_menu(message):
     if message.text == 'Добавить заметку':
         bot.register_next_step_handler(message, notes_menu_add)
         bot.send_message(message.from_user.id, "Добавить заметку")
-        bot.send_message(message.from_user.id, "Что добавить заметку нужно ввести ее по определенному шаблону (ГГГГ-ММ-ДД ЧЧ:ММ|содержание заметки)\nУчтите пробелы!")
-    if message.text == 'Удалить заметку':
+        bot.send_message(message.from_user.id, "Что добавить заметку нужно ввести ее по определенному шаблону (ММ-ДД ЧЧ:ММ содержание заметки)\nГде прочерки там должны быть пробелы!")
+    elif message.text == 'Удалить заметку':
         bot.register_next_step_handler(message, notes_menu_delete)
         notes_delete_on_date(message)
         try:
             bot.send_message(message.from_user.id, "Список ваших заметок:")
             mycursor.execute('SELECT idtest, date_time, content FROM _test ORDER BY date_time')
+            str_all_task = ""
             for result in mycursor.fetchall():
-                my_list = []
-                my_list.append('⭐')
+                str_one_task = "📌"
                 for x in result:
-                    my_list.append(''.join(str(x)))
-                result = ' | '.join(my_list)
-                bot.send_message(message.from_user.id, result)
+                    str_one_task += " " + str(x) + "\n"
+                str_all_task += str_one_task + "\n"
+                str_all_task += "\n"
+            bot.send_message(message.from_user.id, str_all_task)
         except:
             bot.send_message(message.from_user.id, "Что-то пошло не так")
             bot.register_next_step_handler(message, notes_menu)
         bot.send_message(message.from_user.id, "Удалить заметку")
         bot.send_message(message.from_user.id, "Что удалить заметку нужно ввести ее номер (ID)")
-    if message.text == 'Вывести все заметки':
+    elif message.text == 'Вывести все заметки':
         bot.send_message(message.from_user.id, "Вывести все заметки")
         notes_menu_getall(message)
+    else:
+        bot.send_message(message.from_user.id, "Вы ввели / выбрали не правильный запрос")
+        notes_btn(message)
 
 
 @bot.message_handler(content_types=['text'])
 def notes_menu_add(message):
     notes_delete_on_date(message)
-    reg ='\d{4}-\d\d-\d\d \d\d:\d\d\|\w+'
+    reg ='\d\d-\d\d \d\d:\d\d\ \w+'
     str_notes_menu_add = message.text
     if (re.fullmatch (reg, str_notes_menu_add)):
-        str_date = str_notes_menu_add.split("|")[0]
-        str_content = str_notes_menu_add.split("|")[1]
+        str_date = "2022-" + str_notes_menu_add.split(" ")[0] + " " + str_notes_menu_add.split(" ")[1]
+        str_content = str_notes_menu_add.split(" ")[2]
         try:
             sql = "INSERT INTO _test (date_time, content) VALUE (%s, %s)"
             val = (str_date, str_content)
             mycursor.execute(sql, val)
             mydb.commit()
             bot.send_message(message.from_user.id, "Ваша заметка успешно добавлена:")
+            
+
+            time.sleep (10)
+            telegram = get_notifier('telegram')
+            telegram.notify(token = BOT_TOKEN, chat_id = 1477649999, message = str_notes_menu_add)
+
+
             notes_menu_getall(message)
             bot.register_next_step_handler(message, notes_menu)
         except:
@@ -289,13 +303,14 @@ def notes_menu_getall(message):
     try:
         bot.send_message(message.from_user.id, "Список ваших заметок:")
         mycursor.execute('SELECT idtest, date_time, content FROM _test ORDER BY date_time')
+        str_all_task = ""
         for result in mycursor.fetchall():
-            my_list = []
-            my_list.append('📌')
+            str_one_task = "📌"
             for x in result:
-                my_list.append(''.join(str(x)))
-            result = ' | '.join(my_list)
-            bot.send_message(message.from_user.id, result)
+                str_one_task += " " + str(x) + "\n"
+            str_all_task += str_one_task + "\n"
+            str_all_task += "\n"
+        bot.send_message(message.from_user.id, str_all_task)
         bot.register_next_step_handler(message, notes_menu)
     except:
         bot.send_message(message.from_user.id, "Что-то пошло не так")
@@ -331,13 +346,15 @@ def table_teacher_day(message):
                     join _tables as tb on t.idteachers = tb.idteachers \
                     where table_day = (%s) and teacher_fio = (%s) and table_parity = (%s)"
         val = (User.teacher_day, User.teacher_fio, User.teacher_parity)
-        worktime_list = ["8:30 - 10:00 ","10:10 - 11:40", "11:50 - 13:20", "13:40 - 15:10", "15:20 - 16:50", "17:00 - 18:30", "18:35 - 20:00"]
+        worktime_list = ["8:30 - 10:00  ","10:10 - 11:40", "11:50 - 13:20", "13:40 - 15:10", "15:20 - 16:50", "17:00 - 18:30", "18:35 - 20:00"]
 
         mycursor.execute(sql, val)
+        str_all_lesson = ""
         for result in mycursor.fetchall():
             for x in result:
-                bot.send_message(message.from_user.id, worktime_list[iterator] + " | " + x)
+                str_all_lesson += worktime_list[iterator] + " | " + str(x) + "\n"
                 iterator += 1
+        bot.send_message(message.from_user.id, str_all_lesson)
         
         bot.register_next_step_handler(message, table_teacher_day)      
     except:
@@ -348,11 +365,11 @@ def teacher_fulltable(message):
     try:
         bot.send_message(message.from_user.id, "Список преподавателей:")
         mycursor.execute('SELECT teacher_fio FROM _teachers')
+        str_all_teacher = ""
         for result in mycursor.fetchall():
-            my_list = []
             for x in result:
-                my_list.append(''.join(str(x)))
-            bot.send_message(message.from_user.id, result)
+                str_all_teacher += str(x) + "\n" 
+        bot.send_message(message.from_user.id, str_all_teacher)
     except:
         bot.send_message(message.from_user.id, "Что-то пошло не так")
 
