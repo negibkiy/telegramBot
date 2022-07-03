@@ -123,11 +123,15 @@ def event(message):
 @bot.message_handler(content_types=['text'])        
 def table(message): 
     if message.text == '📋 Расписание преподавателя':     
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("преподавателя")
         markup.add(item1)
-        bot.send_message(message.from_user.id,"'Расписание преподавателя", reply_markup = markup)
-    
+        bot.send_message(message.from_user.id,"Расписание преподавателя", reply_markup = markup)
+        #ДОЛЖНА БЫТЬ ФУНКЦИЯ СПИСОК ПРЕПОДАВАТЕЛЕЙ
+        teacher_fulltable(message)
+        bot.send_message(message.from_user.id, "Введите ФИО преподаватели из представленного списка")
+        bot.register_next_step_handler(message, table_teacher_name)
+
     if message.text == '🔔 Расписание звонков':         
         img = open('img/table_ring/ring.jpg', 'rb')
         bot.send_photo(message.from_user.id, img)
