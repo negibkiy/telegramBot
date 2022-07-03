@@ -41,20 +41,20 @@ def event(message):
 
     if message.text == '🎓 Основные подразделения':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton("Деканат ФЭВТ")
-        item2 = types.KeyboardButton("Библиотека")
-        item3 = types.KeyboardButton("Профком")
+        item1 = types.KeyboardButton("📫 Деканат ФЭВТ")
+        item2 = types.KeyboardButton("📕 Библиотека")
+        item3 = types.KeyboardButton("💸 Профком")
         btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, btn_exit)
-        bot.send_message(message.from_user.id,"🚁 Основные подразделения", reply_markup = markup)
+        bot.send_message(message.from_user.id,"🎓 Основные подразделения", reply_markup = markup)
         bot.register_next_step_handler(message, osn_podrazdeleniya)        
 
     if message.text == '📂 Полезные ссылки':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton("Сайты ВолгГТУ")
-        item2 = types.KeyboardButton("Вспомогательные")
-        item3 = types.KeyboardButton("Спорт")
-        item4 = types.KeyboardButton("Пароли и логины для DUMP")
+        item1 = types.KeyboardButton("🎓 Сайты ВолгГТУ")
+        item2 = types.KeyboardButton("🏖️ Вспомогательные")
+        item3 = types.KeyboardButton("🏆 Спорт")
+        item4 = types.KeyboardButton("📚 Пароли и логины для DUMP")
         btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"📂 Полезные ссылки", reply_markup = markup)
@@ -71,7 +71,7 @@ def event(message):
         item7 = types.KeyboardButton("Тракторный учебный корпус")
         btn_exit = types.KeyboardButton("⬆️ В главное меню")
         markup.add(item1, item2, item3, item4, item5, item6, item7, btn_exit)
-        bot.send_message(message.from_user.id,"🏫 Корпуса", reply_markup = markup)
+        bot.send_message(message.from_user.id,"🏛️ Корпуса", reply_markup = markup)
         bot.register_next_step_handler(message, build)
 
     if message.text == '📅 Расписание':                            # ВЫБОР РАСПИСАНИЯ 
@@ -131,7 +131,7 @@ def choice_table(message):
     elif message.text == '/about':
         about(message) 
     elif message.text == '⬅️ Назад':          # выполняется переход в главное меню
-        markup, notification  = one_step_back('Расписание', message)
+        markup, notification  = one_step_back('📅 Расписание', message)
         bot.send_message(message.from_user.id, notification, reply_markup = markup)
         bot.register_next_step_handler(message, table)   
     else:
@@ -168,7 +168,7 @@ def website(message):
     global choice 
     choice = message.text  # какой полезный ресурс нужен
     
-    if message.text == 'Сайты ВолгГТУ':
+    if message.text == '🎓 Сайты ВолгГТУ':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("edu")
         item2 = types.KeyboardButton("eos2")
@@ -183,7 +183,7 @@ def website(message):
         bot.send_message(message.from_user.id,"Основные официальные сайты и группы ФЭВТ ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, useful_links)
 
-    if message.text == 'Вспомогательные': 
+    if message.text == '🏖️ Вспомогательные': 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Diagrams.net")
         item2 = types.KeyboardButton("ERDPlus")
@@ -201,7 +201,7 @@ def website(message):
         bot.send_message(message.from_user.id,"Сайты для помощи студентам ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, useful_links)      
 
-    if message.text == 'Спорт':
+    if message.text == '🏆 Спорт':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Отдел спорта ВолгГТУ")
         item2 = types.KeyboardButton("Студенческий спортивный клуб ВолгГТУ (Группа VK)")
@@ -211,7 +211,7 @@ def website(message):
         bot.send_message(message.from_user.id,"Сайты и группы, посвященные спорту ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, useful_links) 
 
-    if message.text == 'Пароли и логины для DUMP':             # ОТСЫЛАЕТ КАРТИНКУ С ЛОГИНАМИ И ПАРОЛЯМИ ОТ DUMP.VSTU.RU
+    if message.text == '📚 Пароли и логины для DUMP':             # ОТСЫЛАЕТ КАРТИНКУ С ЛОГИНАМИ И ПАРОЛЯМИ ОТ DUMP.VSTU.RU
         img = open('img/table_dump_logins/parol_login_dump.jpg', 'rb')
         bot.send_photo(message.from_user.id, img)     
         bot.register_next_step_handler(message, website)
@@ -228,7 +228,7 @@ def useful_links(message):
     elif message.text == '/about':
         about(message) 
     elif message.text == '⬅️ Назад':          # выполняется переход в главное меню
-        markup, notification  = one_step_back('Полезные ссылки', message)
+        markup, notification  = one_step_back('📂 Полезные ссылки', message)
         bot.send_message(message.from_user.id, notification, reply_markup = markup)
         bot.register_next_step_handler(message, website) 
     else:
@@ -246,7 +246,7 @@ def osn_podrazdeleniya(message):
     global choice 
     choice = message.text  # какое основное подразделение нас интересует
 
-    if message.text == 'Деканат ФЭВТ':    
+    if message.text == '📫 Деканат ФЭВТ':    
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Расписание и кабинет (Деканат ФЭВТ)")
         item2 = types.KeyboardButton("Группа VK (Деканат ФЭВТ)")
@@ -257,7 +257,7 @@ def osn_podrazdeleniya(message):
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о деканате ФЭВТ", reply_markup = markup)
         bot.register_next_step_handler(message, info_about_podrazdelenie)
 
-    if message.text == 'Библиотека':    
+    if message.text == '📕 Библиотека':    
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Расписание (Библиотека)")
         item2 = types.KeyboardButton("Группа VK (Библиотека)")
@@ -268,7 +268,7 @@ def osn_podrazdeleniya(message):
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о библиотеке ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, info_about_podrazdelenie)   
 
-    if message.text == 'Профком':    
+    if message.text == '💸 Профком':    
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Кабинет и расписание (Профком)")
         item2 = types.KeyboardButton("Группа VK (Профком)")
@@ -291,7 +291,7 @@ def info_about_podrazdelenie(message):
     elif message.text == '/about':
         about(message) 
     elif message.text == '⬅️ Назад':          # выполняется переход в главное меню
-        markup, notification  = one_step_back('Основные подразделения', message)
+        markup, notification  = one_step_back('🎓 Основные подразделения', message)
         bot.send_message(message.from_user.id, notification, reply_markup = markup)
         bot.register_next_step_handler(message, osn_podrazdeleniya)
     else:
@@ -302,10 +302,6 @@ def info_about_podrazdelenie(message):
         else:
             start(message)            
 #-------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
 
 
 
