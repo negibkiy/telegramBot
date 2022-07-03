@@ -25,10 +25,12 @@ mydb = mysql.connector.connect(
 class User:
     def __init__(self, iduser):
         self. iduser = iduser
+        self.idchat = ' '
         self. password = ' '
         self.teacher_fio = ' '
         self.teacher_parity = ' '
         self.teacher_day = ' '
+        self.str_notes_date = ' '
 
 mycursor = mydb.cursor()
 
@@ -37,10 +39,14 @@ def start(message):
     message_id = message.from_user.id
     back_to_main(message_id)
 
+@bot.message_handler(commands=['help'])     # вызов стартового меню по команде /start
+def list_com(message):
+    bot.send_message(message.from_user.id, "ХЕЕЕЕЕЕЕЛП")
+
 @bot.message_handler(content_types=['text'])     #  ГЛАВНАЯ ФУНКЦИЯ С КНОПКАМИ
 def event(message): 
     if message.text == '🚲 Мероприятия':
-        bot.send_message(message.from_user.id, "Хай")
+        bot.send_message(chat_id=458927235, text="куку")
         
     if message.text == '🏢 Консультации':
         bot.send_message(message.from_user.id, "Введите name")
@@ -167,7 +173,6 @@ def table(message):
         message_id = message.from_user.id
         back_to_main(message_id)
 
-
 ################################# РЕГИСТРАЦИЯ #################################
 
 @bot.message_handler(content_types=['text'])
@@ -182,10 +187,11 @@ def notes_choice(message):
 @bot.message_handler(content_types=['text'])
 def notes_pass_reg(message): 
         User.idusers = message.from_user.id
+        User.idchat = message.chat.id
         User.password = message.text
         try:
-            sql = "INSERT INTO _users (idusers, passwords) VALUE (%s, %s)"
-            val = (User.idusers, User.password)
+            sql = "INSERT INTO _users (idusers, user_chat, user_password) VALUE (%s, %s, %s)"
+            val = (User.idusers, User.idchat, User.password)
             mycursor.execute(sql, val)
             mydb.commit()
             notes_btn(message)
@@ -198,7 +204,7 @@ def notes_pass_enter(message):
         User.idusers = message.from_user.id
         User.password = message.text
         try:
-            sql = "SELECT idusers, passwords FROM _users WHERE idusers = %s AND passwords = %s"
+            sql = "SELECT idusers, user_password FROM _users WHERE idusers = %s AND user_password = %s"
             val = (User.idusers, User.password)
             mycursor.execute(sql, val)
             exist = mycursor.fetchall()
@@ -223,7 +229,7 @@ def notes_btn(message):
 @bot.message_handler(content_types=['text'])
 def notes_menu(message):
     if message.text == 'Добавить заметку':
-        bot.register_next_step_handler(message, notes_menu_add)
+        bot.register_next_step_handler(message, notes_menu_add_date)
         bot.send_message(message.from_user.id, "Добавить заметку")
         bot.send_message(message.from_user.id, "Что добавить заметку нужно ввести ее по определенному шаблону (ММ-ДД ЧЧ:ММ содержание заметки)\nГде прочерки там должны быть пробелы!")
     elif message.text == 'Удалить заметку':
@@ -254,35 +260,39 @@ def notes_menu(message):
 
 
 @bot.message_handler(content_types=['text'])
-def notes_menu_add(message):
+def notes_menu_add_date(message):
     notes_delete_on_date(message)
-    reg ='\d\d-\d\d \d\d:\d\d\ \w+'
-    str_notes_menu_add = message.text
-    if (re.fullmatch (reg, str_notes_menu_add)):
-        str_date = "2022-" + str_notes_menu_add.split(" ")[0] + " " + str_notes_menu_add.split(" ")[1]
-        str_content = str_notes_menu_add.split(" ")[2]
-        try:
-            sql = "INSERT INTO _test (date_time, content) VALUE (%s, %s)"
-            val = (str_date, str_content)
-            mycursor.execute(sql, val)
-            mydb.commit()
-            bot.send_message(message.from_user.id, "Ваша заметка успешно добавлена:")
-            
-
-            time.sleep (10)
-            telegram = get_notifier('telegram')
-            telegram.notify(token = BOT_TOKEN, chat_id = 1477649999, message = str_notes_menu_add)
-
-
-            notes_menu_getall(message)
-            bot.register_next_step_handler(message, notes_menu)
-        except:
-            bot.send_message(message.from_user.id, "Что-то пошло не так")
-            bot.register_next_step_handler(message, notes_menu)
+    reg ='\d{2}-\d{2} \d{2}:\d{2}'
+    User.str_notes_date = message.text
+    if (re.fullmatch (reg, User.str_notes_date)):
+            bot.register_next_step_handler(message, notes_menu_add_content)
+            bot.send_message(message.from_user.id, "Введите содержимое")  
     else:
         bot.send_message(message.from_user.id, "Что-то пошло не так")    
         bot.register_next_step_handler(message, notes_menu)
 
+@bot.message_handler(content_types=['text'])
+def notes_menu_add_content(message):
+    str_notes_date = "2022-" + User.str_notes_date
+    str_notes_content = message.text
+    try:
+        sql = "INSERT INTO _test (date_time, content) VALUE (%s, %s)"
+        val = (str_notes_date, str_notes_content)
+        mycursor.execute(sql, val)
+        mydb.commit()
+        bot.send_message(message.from_user.id, "Ваша заметка успешно добавлена:")
+        notes_menu_getall(message)
+
+        time.sleep (5)
+        mycursor.execute('SELECT user_chat FROM _users')
+        for result in mycursor.fetchall():
+            for x in result:
+                bot.send_message(chat_id=x, text="Добавлена новая заметка:\n📌 " + str_notes_date + "\n" + str_notes_content)
+
+        bot.register_next_step_handler(message, notes_menu)
+    except:
+        bot.send_message(message.from_user.id, "Что-то пошло не так")
+        bot.register_next_step_handler(message, notes_menu)
 
 @bot.message_handler(content_types=['text'])
 def notes_menu_delete(message):
