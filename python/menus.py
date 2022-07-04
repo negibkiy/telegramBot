@@ -41,8 +41,9 @@ def one_step_back(booling_word, message):
         item2 = types.KeyboardButton("📕 Библиотека")
         item3 = types.KeyboardButton("💸 Профком")
         item4 = types.KeyboardButton("🗿 2 Отдел")
+        item5 = types.KeyboardButton("💰 Стипендии")
         btn_exit = types.KeyboardButton("⬆️ В главное меню")
-        markup.add(item1, item2, item3, item4, btn_exit)
+        markup.add(item1, item2, item3, item4, item5, btn_exit)
         notification = "🎓 Основные подразделения"
 
     return markup, notification
