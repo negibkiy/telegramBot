@@ -72,8 +72,9 @@ def event(message):
         item1 = types.KeyboardButton("📫 Деканат ФЭВТ")
         item2 = types.KeyboardButton("📕 Библиотека")
         item3 = types.KeyboardButton("💸 Профком")
+        item4 = types.KeyboardButton("🗿 2 Отдел")
         btn_exit = types.KeyboardButton("⬆️ В главное меню")
-        markup.add(item1, item2, item3, btn_exit)
+        markup.add(item1, item2, item3, item4, btn_exit)
         bot.send_message(message.from_user.id,"🎓 Основные подразделения", reply_markup = markup)
         bot.register_next_step_handler(message, osn_podrazdeleniya)        
 
@@ -311,6 +312,17 @@ def osn_podrazdeleniya(message):
         bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о профкоме ВолгГТУ", reply_markup = markup)
         bot.register_next_step_handler(message, info_about_podrazdelenie)
 
+    if message.text == '🗿 2 Отдел':    
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Кабинет и информация (2 отдел)")
+        item2 = types.KeyboardButton("Какие документы необходимы? (2 отдел)")
+        item3 = types.KeyboardButton("Уже был там (2 отдел)")
+        item4 = types.KeyboardButton("⬅️ Назад")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
+        markup.add(item1, item2, item3, item4, btn_exit)
+        bot.send_message(message.from_user.id,"Выберите какую информацию вы хотите получить о 2-м отделе ВолгГТУ", reply_markup = markup)
+        bot.register_next_step_handler(message, info_about_podrazdelenie)
+
     if message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
         start(message)
     if message.text == '/about':
@@ -337,10 +349,16 @@ def info_about_podrazdelenie(message):
 
 
 
-################################# РЕГИСТРАЦИЯ #################################
+
+
+
+
+
+
+#################################################### РЕГИСТРАЦИЯ #################################################################
 
 @bot.message_handler(content_types=['text'])
-def notes_choice(message): 
+def notes_choice(message):                               # ГЛАВНОЕ МЕНЮ ЗАМЕТОК
     if message.text == 'Войти в аккаунт':
         bot.send_message(message.from_user.id, "Введите пароль")
         bot.register_next_step_handler(message, notes_pass_enter)
@@ -349,7 +367,7 @@ def notes_choice(message):
         bot.register_next_step_handler(message, notes_pass_reg)
 
 @bot.message_handler(content_types=['text'])
-def notes_pass_reg(message): 
+def notes_pass_reg(message):                           # РЕГИСТРАЦИЯ
         User.idusers = message.from_user.id
         User.idchat = message.chat.id
         User.password = message.text
@@ -364,7 +382,7 @@ def notes_pass_reg(message):
             bot.register_next_step_handler(message, notes_choice)
 
 @bot.message_handler(content_types=['text'])
-def notes_pass_enter(message): 
+def notes_pass_enter(message):                      # ВХОД В АККАУНТ ЗАМЕТОК
         User.idusers = message.from_user.id
         User.password = message.text
         try:
@@ -380,8 +398,7 @@ def notes_pass_enter(message):
         except:
             bot.send_message(message.from_user.id, "Неправильный пароль")
 
-
-def notes_btn(message):
+def notes_btn(message):                                            # КНОПКИ УПРАВЛЕНИЯ ЗАМЕТКАМИ (УДАЛИТЬ, ДОБАВИТЬ, ПОКАЗАТЬ)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить заметку")
     item2 = types.KeyboardButton("Удалить заметку")
@@ -391,11 +408,11 @@ def notes_btn(message):
     bot.register_next_step_handler(message, notes_menu)
 
 @bot.message_handler(content_types=['text'])
-def notes_menu(message):
+def notes_menu(message):                            # ДОБАВЛЕНИЕ ЗАМЕТКИ
     if message.text == 'Добавить заметку':
         bot.register_next_step_handler(message, notes_menu_add_date)
         bot.send_message(message.from_user.id, "Добавить заметку")
-        bot.send_message(message.from_user.id, "Что добавить заметку нужно ввести ее по определенному шаблону (ММ-ДД ЧЧ:ММ содержание заметки)\nГде прочерки там должны быть пробелы!")
+        bot.send_message(message.from_user.id, "Что добавить заметку нужно ввести ее по определенному шаблону (ММ-ДД ЧЧ:ММ) \n Скобки вводить не нужно! \nНажмите \"Ввод (Enter)\" и теперь вы сможете записать все, что угодно в заметкку.")
     elif message.text == 'Удалить заметку':
         bot.register_next_step_handler(message, notes_menu_delete)
         notes_delete_on_date(message)
@@ -422,9 +439,8 @@ def notes_menu(message):
         bot.send_message(message.from_user.id, "Вы ввели / выбрали не правильный запрос")
         notes_btn(message)
 
-
 @bot.message_handler(content_types=['text'])
-def notes_menu_add_date(message):
+def notes_menu_add_date(message):                 # ДОБАВЛЕНИЕ ДАТЫ
     notes_delete_on_date(message)
     reg ='\d{2}-\d{2} \d{2}:\d{2}'
     User.str_notes_date = message.text
@@ -436,7 +452,7 @@ def notes_menu_add_date(message):
         bot.register_next_step_handler(message, notes_menu)
 
 @bot.message_handler(content_types=['text'])
-def notes_menu_add_content(message):
+def notes_menu_add_content(message):                  # ВВОД ДАТЫ И СОДЕРЖАНИЯ ЗАМЕТКИ
     str_notes_date = "2022-" + User.str_notes_date
     str_notes_content = message.text
     try:
@@ -451,7 +467,7 @@ def notes_menu_add_content(message):
         mycursor.execute('SELECT user_chat FROM _users')
         for result in mycursor.fetchall():
             for x in result:
-                bot.send_message(chat_id=x, text="Добавлена новая заметка:\n📌 " + str_notes_date + "\n" + str_notes_content)
+                bot.send_message(chat_id=x, text="Добавлена новая заметка:\n📌 " + str_notes_date + "\n" + str_notes_content)                                                                                                      
 
         bot.register_next_step_handler(message, notes_menu)
     except:
@@ -459,7 +475,7 @@ def notes_menu_add_content(message):
         bot.register_next_step_handler(message, notes_menu)
 
 @bot.message_handler(content_types=['text'])
-def notes_menu_delete(message):
+def notes_menu_delete(message):               # УДАЛЕНИЕ ЗАМЕТКИ (ПО ЖЕЛАНИЮ ПОЛЬЗОВАТЕЛЯ)
     notes_delete_on_date(message)
     str_delete = message.text
     try:
@@ -473,7 +489,7 @@ def notes_menu_delete(message):
 
 
 def notes_menu_getall(message):
-    notes_delete_on_date(message)
+    notes_delete_on_date(message)                # УДАЛЕНИЕ ЗАМЕТКИ (ПО ПО ИСТЕЧЕНИИ ДАТЫ И ВРЕМЕНИ)
     try:
         bot.send_message(message.from_user.id, "Список ваших заметок:")
         mycursor.execute('SELECT idtest, date_time, content FROM _test ORDER BY date_time')
@@ -496,23 +512,23 @@ def notes_delete_on_date(message):
         mydb.commit()
     except:
         bot.send_message(message.from_user.id, "Что-то пошло не так")
-##################################################################
+####################################################################################################################################
 
-##########################   Преподаватели   ##########################
+#################################################### ПРЕПОДАВАТЕЛИ #################################################################
 @bot.message_handler(content_types=['text'])
-def table_teacher_name(message):
+def table_teacher_name(message):                         # ВВОД ИМЯ ПРЕПОДАВАТЕЛЯ 
     User.teacher_fio = message.text
     bot.send_message(message.from_user.id, "Введите четность недели")
     bot.register_next_step_handler(message, table_teacher_parity)
 
 @bot.message_handler(content_types=['text'])
-def table_teacher_parity(message):
+def table_teacher_parity(message):            # ВВОД ЧЕТНОСТИ НЕДЕЛИ
     User.teacher_parity = message.text
     bot.send_message(message.from_user.id, "Введите на какой день недели нужно расписание")
     bot.register_next_step_handler(message, table_teacher_day)
       
 @bot.message_handler(content_types=['text'])
-def table_teacher_day(message):
+def table_teacher_day(message):                    # ВВОД ДНЯ НЕДЕЛИ ДЛЯ РАСПИСАНИЯ ПРЕПОДАВАТЕЛЯ
     User.teacher_day = message.text
     iterator = 0
     try: 
@@ -529,13 +545,12 @@ def table_teacher_day(message):
                 str_all_lesson += worktime_list[iterator] + " | " + str(x) + "\n"
                 iterator += 1
         bot.send_message(message.from_user.id, str_all_lesson)
-        
         bot.register_next_step_handler(message, table_teacher_day)      
     except:
         bot.send_message(message.from_user.id, "Что-то пошло не так")
 
 
-def teacher_fulltable(message):
+def teacher_fulltable(message):          # ВЫВОД ВСЕХ ПРЕПОДАВАТЕЛЕЙ
     try:
         bot.send_message(message.from_user.id, "Список преподавателей:")
         mycursor.execute('SELECT teacher_fio FROM _teachers')
@@ -546,9 +561,7 @@ def teacher_fulltable(message):
         bot.send_message(message.from_user.id, str_all_teacher)
     except:
         bot.send_message(message.from_user.id, "Что-то пошло не так")
-
-
-##################################################################
+####################################################################################################################################
 
 
 
