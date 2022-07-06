@@ -462,8 +462,8 @@ def notes_menu(message):                            # ДОБАВЛЕНИЕ ЗА�
     if message.text == 'Добавить заметку':
         bot.register_next_step_handler(message, notes_menu_add_date)
         bot.send_message(message.from_user.id, "Добавить заметку")
-        bot.send_message(message.from_user.id, "Чтобы добавить заметку нужно ввести ее по определенному шаблону (ММ-ДД ЧЧ:ММ)\n"\
-        "Скобки вводить не нужно! \nЗатем Нажмите \"Ввод (Enter)\" и теперь вы сможете записать все, что угодно в заметкку.")
+        bot.send_message(message.from_user.id, "Чтобы добавить заметку нужно ввести ее по определенному шаблону (ГГГГ-ММ-ДД ЧЧ:ММ)\n"\
+        "Скобки вводить не нужно! \nЗатем Нажмите \"Ввод (Enter)\" и теперь вы сможете записать все, что угодно в заметку.")
 
     elif message.text == 'Удалить заметку':
         bot.register_next_step_handler(message, notes_menu_delete)
@@ -509,7 +509,7 @@ def notes_menu(message):                            # ДОБАВЛЕНИЕ ЗА�
 @bot.message_handler(content_types=['text'])
 def notes_menu_add_date(message):                 # ДОБАВЛЕНИЕ ДАТЫ
     notes_delete_on_date(message)
-    reg ='\d{2}-\d{2} \d{2}:\d{2}'
+    reg ='\d{4}-\d{2}-\d{2} \d{2}:\d{2}'
     User.str_notes_date = message.text
 
     if (re.fullmatch (reg, User.str_notes_date)):
@@ -528,12 +528,12 @@ def notes_menu_add_date(message):                 # ДОБАВЛЕНИЕ ДАТ�
       
     else:
         bot.send_message(message.from_user.id, "Дата и время введены неправильно! Пожалуйста, проверьте вводимое значение еще раз\
-             и сверьте с шаблоном ➡️ (ММ-ДД ЧЧ:ММ).\n Попробуйте еще раз:")    
+             и сверьте с шаблоном ➡️ (ГГГГ-ММ-ДД ЧЧ:ММ).\n Попробуйте еще раз:")    
         bot.register_next_step_handler(message, notes_menu_add_date)
 
 @bot.message_handler(content_types=['text'])
 def notes_menu_add_content(message):                  # ВВОД ДАТЫ И СОДЕРЖАНИЯ ЗАМЕТКИ
-    str_notes_date = "2022-" + User.str_notes_date
+    str_notes_date = User.str_notes_date
     str_notes_content = message.text
 
     try:
