@@ -1,4 +1,17 @@
 from telebot import types
+import mysql.connector
+from connect import host, user, password, database
+import connect  # подключение файла коннект для подключения к БД
+import re
+import time
+
+mydb = mysql.connector.connect(
+  host=host,
+  user=user,
+  password=password,
+  database=database)
+
+mycursor = mydb.cursor()
 
 def about_help():                                                                      # феукция для вывода сообщения для помощи пользователю
     return "Я - информационный бот VSTU для помощи студентам ФЭВТ 1-4 курса.\n\n"\
@@ -271,3 +284,17 @@ def choice_parity_of_week(message):                         # функция д�
         parity = 0
    
     return parity
+
+def teacher_name_search(message):          # ПОИСК НУЖНОГО ПРЕПОДАВАТЕЛЯ
+    try:
+        sql = "SELECT teacher_fio FROM _teachers where teacher_fio = "+"\""+message.text+"\""
+        mycursor.execute(sql)
+        exist = mycursor.fetchall()
+        
+        if len(exist) == 1:
+            return 1
+        else:
+            return 0
+
+    except:
+        return 0

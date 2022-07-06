@@ -9,10 +9,8 @@ import re
 import time
 
 from menus import back_to_main, one_step_back, main_menu, menu_day_of_week, menu_parity_of_week  # подключение файла с функциями возврата в главное меню и предыдущее
-from functions import choice_build, choice_website, choice_osn_podrazdeleniya, choice_tRas_tExm, about_help, choice_day_of_week, choice_parity_of_week
+from functions import choice_build, choice_website, choice_osn_podrazdeleniya, choice_tRas_tExm, about_help, choice_day_of_week, choice_parity_of_week, teacher_name_search
 from sorry_message import sorry_message  # подключение файла с сообщением о неправильном вводе
-
-connection_db = mysql.connector.connect(user=user, password=password, host=host, database=database)  # подключение к БД
 
 mydb = mysql.connector.connect(
   host=host,
@@ -722,19 +720,7 @@ def teacher_fulltable(message):          # ВЫВОД ВСЕХ ПРЕПОДАВ�
         bot.send_message(message.from_user.id, "Что-то пошло не так")
 
 
-def teacher_name_search(message):          # ПОИСК НУЖНОГО ПРЕПОДАВАТЕЛЯ
-    try:
-        sql = "SELECT teacher_fio FROM _teachers where teacher_fio = "+"\""+message.text+"\""
-        mycursor.execute(sql)
-        exist = mycursor.fetchall()
-        
-        if len(exist) == 1:
-            return 1
-        else:
-            return 0
 
-    except:
-        return 0
 ####################################################################################################################################
 
 
