@@ -481,7 +481,7 @@ def block_enter(message):                      # ВХОД В АККАУНТ
             bot.send_message(message.from_user.id, "Неправильный пароль!")
             bot.register_next_step_handler(message, block_enter)
 
-
+#################################################### старосты #######################################################################
 def starosta_btn(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить " +  User.btn_choice)
@@ -653,7 +653,7 @@ def startosta_menu_delete(message):
         bot.send_message(message.from_user.id, "Ввести ID, значит ввести цифры сверху над заметкой, справа от знака 📌. \n\n Попробуйте ввести ID заметки для удаления еще раз:")
         bot.register_next_step_handler(message, startosta_menu_delete)
 
-
+#################################################### студентики #######################################################################
 def student_getall(message):
     if User.btn_choice == "💼 Мероприятия":
         try:
@@ -724,9 +724,10 @@ def student_menu(message):
         bot.register_next_step_handler(message, startosta_menu)
      if message.text == '⬆️ В главное меню':
         start(message)
+####################################################################################################################################
 
-
-def notes_btn(message):                                            # КНОПКИ УПРАВЛЕНИЯ ЗАМЕТКАМИ (УДАЛИТЬ, ДОБАВИТЬ, ПОКАЗАТЬ)
+#################################################### ЗАМЕТКИ #######################################################################
+def notes_btn(message):                                            
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("Добавить заметку")
     item2 = types.KeyboardButton("Удалить заметку")
