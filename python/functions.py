@@ -119,16 +119,20 @@ def choice_website(choice_group, message):        # функция для выб
     return link     
 
 def choice_osn_podrazdeleniya(choice_podrazdelenie, message):        # функция для выбора основных подразделений
+    web_link = 0
+
     if choice_podrazdelenie == '📫 Деканат ФЭВТ':    # если выбрана "📫 Деканат ФЭВТ"
         if message.text == 'Расписание и кабинет (Деканат ФЭВТ)':
             info = '  Кабинет: В - 1207\nГрафик работы со студентами:\n\n пн-пт 11.00-12.30\n            13.00-15.00'
 
         elif message.text == 'Группа VK (Деканат ФЭВТ)':
             info = 'https://vk.com/club193491114'
+            web_link = 1 
 
         elif message.text == 'Рейтинговая оценка системы знаний':
             info = '  Оценки в зависимости от баллов:\n\n 5 - 90 - 100 баллов\n 4 - 76 - 89 баллов\n 3 - 61 - 75 баллов\n'\
                 ' 2 - менее 60-ти баллов\n\n К итоговой аттестации допускаются\n студенты, набравшие по изучаемой\n дисциплине 40 - 60 баллов за семестр'
+
         else:
             info = 0
 
@@ -138,9 +142,11 @@ def choice_osn_podrazdeleniya(choice_podrazdelenie, message):        # функ�
 
         elif message.text == 'Группа VK (Библиотека)':
             info = 'https://vk.com/library_vstu'
+            web_link = 1
 
         elif message.text == 'Сайт (Библиотека)':
             info = 'http://library.vstu.ru/node/28'
+            web_link = 1
 
         else:
             info = 0    
@@ -151,9 +157,11 @@ def choice_osn_podrazdeleniya(choice_podrazdelenie, message):        # функ�
 
         elif message.text == 'Группа VK (Профком)':
             info = 'https://vk.com/pksvstu'
+            web_link = 1
 
         elif message.text == 'Сайт (Профком)':
             info = 'https://www.eseur.ru/volgograd/gosudarstvennogo_tehnicheskogo__universiteta/'
+            web_link = 1
 
         else:
             info = 0
@@ -214,7 +222,7 @@ def choice_osn_podrazdeleniya(choice_podrazdelenie, message):        # функ�
     else:
         return 0
 
-    return info  
+    return info, web_link  
 
 def choice_tRas_tExm(choice_table, message):
     choice_kurs = message.text

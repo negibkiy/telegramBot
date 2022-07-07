@@ -271,7 +271,6 @@ def useful_links(message):
         link = choice_website(choice, message)
 
         if link != 0:
-            # bot.send_message(message.chat.id, link)
             markup = types.InlineKeyboardMarkup()
             url_btn = types.InlineKeyboardButton(text = "Перейти на " + message.text, url = link)
             markup.add(url_btn)
@@ -372,10 +371,19 @@ def info_about_podrazdelenie(message):
         bot.register_next_step_handler(message, osn_podrazdeleniya)
 
     else:
-        info = choice_osn_podrazdeleniya(choice, message)
+        info, web_link  = choice_osn_podrazdeleniya(choice, message)
         
         if info != 0:
-            bot.send_message(message.chat.id, info)
+
+            if web_link == 1:
+                markup = types.InlineKeyboardMarkup()
+                url_btn = types.InlineKeyboardButton(text = "Перейти на " + message.text, url = info)
+                markup.add(url_btn)
+                bot.send_message(message.chat.id, "Чтобы перейти по ссылке, нажмите на кнопку: ⬇️", reply_markup = markup)
+
+            else:
+                bot.send_message(message.chat.id, info)
+
             bot.register_next_step_handler(message, info_about_podrazdelenie)
 
         else:
