@@ -271,7 +271,11 @@ def useful_links(message):
         link = choice_website(choice, message)
 
         if link != 0:
-            bot.send_message(message.chat.id, link)
+            # bot.send_message(message.chat.id, link)
+            markup = types.InlineKeyboardMarkup()
+            url_btn = types.InlineKeyboardButton(text = "Перейти на " + message.text, url = link)
+            markup.add(url_btn)
+            bot.send_message(message.chat.id, "Чтобы перейти по ссылке, нажмите на кнопку: ⬇️", reply_markup = markup)
             bot.register_next_step_handler(message, useful_links)
             
         else:
@@ -849,6 +853,7 @@ def notes_menu(message):                            # ДОБАВЛЕНИЕ ЗА�
             bot.send_message(message.from_user.id, "Список ваших заметок:")
             sql = "SELECT idnotes, note_date_time, note_content FROM _notes WHERE idusers = " + str(User.idusers) + " ORDER BY note_date_time"
             mycursor.execute(sql)
+            var = mycursor.execute(sql)
             str_all_task = ""
 
             for result in mycursor.fetchall():
@@ -931,7 +936,7 @@ def notes_menu_add_content(message):                  # ВВОД ДАТЫ И С�
 
 @bot.message_handler(content_types=['text'])
 def notes_menu_delete(message):               # УДАЛЕНИЕ ЗАМЕТКИ (ПО ЖЕЛАНИЮ ПОЛЬЗОВАТЕЛЯ)
-    delete_date(message)
+    delete_date(message)          
     str_delete = message.text
 
     if search_id_delete(message, User.btn_choice):
