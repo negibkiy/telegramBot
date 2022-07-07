@@ -51,12 +51,12 @@ def about(message):
 @bot.message_handler(content_types=['text'])    
 def event(message): 
     if message.text == '💼 Мероприятия':  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        bot.send_message(message.from_user.id, " ⛔ Пока еще в разработке, приносим глубочайшие извинения.", reply_markup = main_menu(message))
+        bot.send_message(message.from_user.id, "💼 Мероприятия", reply_markup = main_menu(message))
         User.btn_choice = message.text
         bot.register_next_step_handler(message, block_choice)
         
     elif message.text == '🏢 Консультации':  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        bot.send_message(message.from_user.id, " ⛔ Пока еще в разработке, приносим глубочайшие извинения.", reply_markup = main_menu(message))
+        bot.send_message(message.from_user.id, "🏢 Консультации", reply_markup = main_menu(message))
         User.btn_choice = message.text
         bot.register_next_step_handler(message, block_choice)
 
@@ -383,11 +383,11 @@ def info_about_podrazdelenie(message):
 @bot.message_handler(content_types=['text'])
 def block_choice(message):                               
     if message.text == 'Войти в аккаунт':
-        bot.send_message(message.from_user.id, "Введите пароль")
+        bot.send_message(message.from_user.id, "Чтобы войти в аккаунт введите пароль:")
         bot.register_next_step_handler(message, block_enter)
 
     elif message.text == 'Зарегистрироваться':
-        bot.send_message(message.from_user.id, "Чтобы зарегистрироваться введите пароль")
+        bot.send_message(message.from_user.id, "Чтобы зарегистрироваться введите пароль:")
         bot.register_next_step_handler(message, block_reg_password)
 
     elif message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
@@ -404,17 +404,40 @@ def block_choice(message):
 
 @bot.message_handler(content_types=['text'])
 def block_reg_password(message):                           # РЕГИСТРАЦИЯ ПАРОЛЯ
+
+    if message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+        start(message)
+    
+    elif message.text == '/about':
+        about(message)
+        bot.register_next_step_handler(message, block_reg_password) 
+
+    elif message.text == "Зарегистрироваться" or message.text == "Войти в аккаунт":
+        block_choice(message) 
+
+    else:
         User.password = message.text
         bot.send_message(message.from_user.id, "Введите группу к которой принадлежите")
         bot.register_next_step_handler(message, block_reg_group) 
 
 
 @bot.message_handler(content_types=['text'])
-def block_reg_group(message):                                # РЕГИСТРАЦИЯ ГРУППЫ           |           также нужно вывести список групп как с преподавателями
-        User.idusers = message.from_user.id
-        User.idchat = message.chat.id
-        User.group = message.text
+def block_reg_group(message):                       # РЕГИСТРАЦИЯ ГРУППЫ       |       также нужно вывести список групп как с преподавателями
+    User.idusers = message.from_user.id
+    User.idchat = message.chat.id
+    User.group = message.text
 
+    if message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+        start(message)
+    
+    elif message.text == '/about':
+        about(message)
+        bot.register_next_step_handler(message, block_reg_group)
+    
+    elif message.text == "Зарегистрироваться" or message.text == "Войти в аккаунт":
+        block_choice(message) 
+    
+    else:
         try:
             sql = "INSERT INTO _users (idusers, user_chat, user_password, status_elder, idgroups) VALUE (%s, %s, %s, default, %s)"
             val = (User.idusers, User.idchat, User.password, User.group)
@@ -430,9 +453,20 @@ def block_reg_group(message):                                # РЕГИСТРА�
 
 @bot.message_handler(content_types=['text'])
 def block_enter(message):                      # ВХОД В АККАУНТ
-        User.idusers = message.from_user.id
-        User.password = message.text
+    User.idusers = message.from_user.id
+    User.password = message.text
 
+    if message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+        start(message)
+    
+    elif message.text == '/about':
+        about(message)
+        bot.register_next_step_handler(message, block_enter)
+
+    elif message.text == "Зарегистрироваться" or message.text == "Войти в аккаунт":
+        block_choice(message) 
+    
+    else:
         try:
             sql = "SELECT idusers, user_password FROM _users WHERE idusers = %s AND user_password = %s"
             val = (User.idusers, User.password)
@@ -464,15 +498,15 @@ def block_enter(message):                      # ВХОД В АККАУНТ
                 if User.btn_choice == '📝 Заметки':
                     notes_btn(message)
 
-            elif message.text == "Зарегистрироваться" or message.text == "Войти в аккаунт":
-                block_choice(message)
+            # elif message.text == "Зарегистрироваться" or message.text == "Войти в аккаунт":
+            #     block_choice(message)
 
-            elif message.text == '/about':
-                about(message)
-                bot.register_next_step_handler(message, block_enter) 
+            # elif message.text == '/about':
+            #     about(message)
+            #     bot.register_next_step_handler(message, block_enter) 
 
-            elif message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
-                start(message)
+            # elif message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+            #     start(message)
 
             else:
                 bot.send_message(message.from_user.id, "Неверный пароль, либо вы не зарегистрированы!")
@@ -998,8 +1032,6 @@ def table_teacher_day(message):                    # ВВОД ДНЯ НЕДЕЛ�
 
 def teacher_fulltable(message):          # ВЫВОД ВСЕХ ПРЕПОДАВАТЕЛЕЙ
     try:
-        global teachers_list 
-
         bot.send_message(message.from_user.id, "Список преподавателей:")
         mycursor.execute('SELECT teacher_fio FROM _teachers')
         str_all_teacher = ""
@@ -1009,13 +1041,9 @@ def teacher_fulltable(message):          # ВЫВОД ВСЕХ ПРЕПОДАВ�
                 str_all_teacher += str(x) + "\n" 
 
         bot.send_message(message.from_user.id, str_all_teacher)
-        teachers_list = str_all_teacher
 
     except:
         bot.send_message(message.from_user.id, "Что-то пошло не так")
-
-
-
 ####################################################################################################################################
 
 
