@@ -144,3 +144,21 @@ def choice_another_teacher():                                        # ФУНК�
     markup.add(item2, btn_exit)
     
     return markup
+
+def starosta_btn(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Добавить " +  message)
+    item2 = types.KeyboardButton("Удалить " +  message)
+    item3 = types.KeyboardButton("Вывести все " + message)
+    btn_exit = types.KeyboardButton("⬆️ В главное меню")
+    markup.add(item1, item2, item3, btn_exit)
+
+    return markup
+
+def student_btn(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Вывести все " + message)
+    btn_exit = types.KeyboardButton("⬆️ В главное меню")
+    markup.add(item1, btn_exit)
+
+    return markup
