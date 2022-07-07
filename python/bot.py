@@ -177,10 +177,15 @@ def build(message):
     else:
         name, address = choice_build (message)          # вызывается функция для выбора корпуса
 
-        if name != 0 and address != 0:
+        if name != 0 and address != 0 and address != "геолокация":
             img = open(f'img/builds/{name.title()}', 'rb')
             bot.send_photo(message.from_user.id, img)           
             bot.send_message(message.chat.id, f'{address.title()}')
+            bot.register_next_step_handler(message, build)
+
+        elif name != 0 and address != 0 and address == "геолокация":  # просмотр геолокаии в корпусах
+            bot.send_message(message.chat.id, name)
+            bot.send_message(message.chat.id, " ❗ Внимание!\n\n Будте аккуратны, геолокация может точно не совпадать с вашим настоящим местоположением!")
             bot.register_next_step_handler(message, build)
 
         else:
