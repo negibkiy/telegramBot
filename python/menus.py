@@ -51,8 +51,9 @@ def main_menu(message):
         item5 = types.KeyboardButton("Кировский учебный корпус")
         item6 = types.KeyboardButton("Красноармейский учебный корпус")
         item7 = types.KeyboardButton("Тракторный учебный корпус")
+        GEO_LOCATION = types.KeyboardButton('❓ Помотреть, где я?' ,request_location = True)
         btn_exit = types.KeyboardButton("⬆️ В главное меню")
-        markup.add(item1, item2, item3, item4, item5, item6, item7, btn_exit)
+        markup.add(item1, item2, item3, item4, item5, item6, item7, GEO_LOCATION, btn_exit)
 
     elif message.text == '📅 Расписание':                          
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)

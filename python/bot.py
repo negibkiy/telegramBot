@@ -186,6 +186,11 @@ def build(message):
         else:
             bot.send_message(message.from_user.id, sorry_message())
             bot.register_next_step_handler(message, build) 
+
+# функция печатает и отвечает на полученные геоданные
+def get_location(bot, update):
+    print(bot.message.location)
+    bot.message.reply_text('{}, мы получили ваше местоположение!'.format(bot.message.chat.first_name))
 #-------------------------------------------------------------------------------------------------------------------------------------------
 
 #--------------------------------------------------------- ПОЛЕЗНЫЕ ССЫЛКИ -----------------------------------------------------------------
