@@ -2,6 +2,20 @@ from email import message
 from telebot import types
 
 def main_menu(message): 
+    if message.text == '💼 Мероприятия':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Войти в аккаунт")
+        item2 = types.KeyboardButton("Зарегистрироваться")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
+        markup.add(item1, item2, btn_exit)
+
+    if message.text == '🏢 Консультации':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Войти в аккаунт")
+        item2 = types.KeyboardButton("Зарегистрироваться")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
+        markup.add(item1, item2, btn_exit)
+
     if message.text == '📝 Заметки':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Войти в аккаунт")
@@ -107,8 +121,9 @@ def menu_day_of_week():                                        # ФУНКЦИЯ 
     item4= types.KeyboardButton("Четверг")
     item5 = types.KeyboardButton("Пятница")
     item6 = types.KeyboardButton("Суббота")
+    item7 = types.KeyboardButton("↩️ Выбрать другую неделю")
     btn_exit = types.KeyboardButton("⬆️ В главное меню") 
-    markup.add(item1, item2, item3, item4, item5, item6, btn_exit)
+    markup.add(item1, item2, item3, item4, item5, item6, item7, btn_exit)
     
     return markup
 
@@ -116,7 +131,16 @@ def menu_parity_of_week():                                        # ФУНКЦИ
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     item1 = types.KeyboardButton("1️⃣ Неделя")
     item2 = types.KeyboardButton("2️⃣ Неделя")
+    item3 = types.KeyboardButton("🔄 Выбрать другого преподавателя")
     btn_exit = types.KeyboardButton("⬆️ В главное меню") 
-    markup.add(item1, item2, btn_exit)
+    markup.add(item1, item2, item3, btn_exit)
+    
+    return markup
+
+def choice_another_teacher():                                        # ФУНКЦИЯ ДЛЯ ВЫЗОВА МЕНЮ С ПРЕПОДАВАТЕЛЯМИ
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item2 = types.KeyboardButton("⬅️ Назад")
+    btn_exit = types.KeyboardButton("⬆️ В главное меню")
+    markup.add(item2, btn_exit)
     
     return markup

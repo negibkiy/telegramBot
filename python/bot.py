@@ -8,7 +8,7 @@ import connect  # подключение файла коннект для под
 import re
 import time
 
-from menus import back_to_main, one_step_back, main_menu, menu_day_of_week, menu_parity_of_week  # подключение файла с функциями возврата в главное меню и предыдущее
+from menus import back_to_main, one_step_back, main_menu, menu_day_of_week, menu_parity_of_week, choice_another_teacher  # подключение файла с функциями возврата в главное меню и предыдущее
 from functions import choice_build, choice_website, choice_osn_podrazdeleniya, choice_tRas_tExm, about_help, choice_day_of_week, choice_parity_of_week, teacher_name_search
 from sorry_message import sorry_message  # подключение файла с сообщением о неправильном вводе
 
@@ -22,11 +22,14 @@ class User:
     def __init__(self, iduser):
         self. iduser = iduser
         self.idchat = ' '
-        self. password = ' '
+        self.password = ' '
+        self.group = ' '
         self.teacher_fio = ' '
         self.teacher_parity = ' '
         self.teacher_day = ' '
         self.str_notes_date = ' '
+        self.btn_choice = ' '
+        self.btn_choice_starosta_or_stud = ' '
 
 mycursor = mydb.cursor()
 
@@ -48,16 +51,19 @@ def about(message):
 @bot.message_handler(content_types=['text'])    
 def event(message): 
     if message.text == '💼 Мероприятия':  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        bot.send_message(message.from_user.id, " ⛔ Пока еще в разработке, приносим глубочайшие извинения.")
-        bot.register_next_step_handler(message, event)
+        bot.send_message(message.from_user.id, " ⛔ Пока еще в разработке, приносим глубочайшие извинения.", reply_markup = main_menu(message))
+        User.btn_choice = message.text
+        bot.register_next_step_handler(message, block_choice)
         
     elif message.text == '🏢 Консультации':  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        bot.send_message(message.from_user.id, " ⛔ Пока еще в разработке, приносим глубочайшие извинения.")
-        bot.register_next_step_handler(message, event)
+        bot.send_message(message.from_user.id, " ⛔ Пока еще в разработке, приносим глубочайшие извинения.", reply_markup = main_menu(message))
+        User.btn_choice = message.text
+        bot.register_next_step_handler(message, block_choice)
 
     elif message.text == '📝 Заметки':
         bot.send_message(message.from_user.id,"🕒 Заметки!", reply_markup = main_menu(message))
-        bot.register_next_step_handler(message, notes_choice)
+        User.btn_choice = message.text
+        bot.register_next_step_handler(message, block_choice)
 
     elif message.text == '🎓 Основные подразделения':
         bot.send_message(message.from_user.id,"🎓 Основные подразделения", reply_markup = main_menu(message))
@@ -92,9 +98,10 @@ def event(message):
 def table(message): 
     if message.text == '📋 Расписание преподавателя':     
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton("преподавателя")
-        markup.add(item1)
-        bot.send_message(message.from_user.id,"Расписание преподавателя", reply_markup = markup)
+        item2 = types.KeyboardButton("⬅️ Назад")
+        btn_exit = types.KeyboardButton("⬆️ В главное меню")
+        markup.add(item2, btn_exit)
+        bot.send_message(message.from_user.id,"📋 Расписание преподавателя", reply_markup = markup)
         #ДОЛЖНА БЫТЬ ФУНКЦИЯ СПИСОК ПРЕПОДАВАТЕЛЕЙ
         teacher_fulltable(message)
         bot.send_message(message.from_user.id, "Введите ФИО преподаватели из представленного списка")
@@ -373,47 +380,56 @@ def info_about_podrazdelenie(message):
 #--------------------------------------------------------------------------------------------------------------------------------
 
 #################################################### РЕГИСТРАЦИЯ #################################################################
-
 @bot.message_handler(content_types=['text'])
-def notes_choice(message):                               
+def block_choice(message):                               
     if message.text == 'Войти в аккаунт':
         bot.send_message(message.from_user.id, "Введите пароль")
-        bot.register_next_step_handler(message, notes_pass_enter)
+        bot.register_next_step_handler(message, block_enter)
 
     elif message.text == 'Зарегистрироваться':
         bot.send_message(message.from_user.id, "Чтобы зарегистрироваться введите пароль")
-        bot.register_next_step_handler(message, notes_pass_reg)
+        bot.register_next_step_handler(message, block_reg_password)
 
     elif message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
         start(message)
     
     elif message.text == '/about':
         about(message)
-        bot.register_next_step_handler(message, notes_choice) 
+        bot.register_next_step_handler(message, block_choice) 
 
     else:
         bot.send_message(message.from_user.id, sorry_message())
-        bot.register_next_step_handler(message, notes_choice)    
+        bot.register_next_step_handler(message, block_choice)    
+
 
 @bot.message_handler(content_types=['text'])
-def notes_pass_reg(message):                           # РЕГИСТРАЦИЯ
+def block_reg_password(message):                           # РЕГИСТРАЦИЯ ПАРОЛЯ
+        User.password = message.text
+        bot.send_message(message.from_user.id, "Введите группу к которой принадлежите")
+        bot.register_next_step_handler(message, block_reg_group) 
+
+
+@bot.message_handler(content_types=['text'])
+def block_reg_group(message):                                # РЕГИСТРАЦИЯ ГРУППЫ           |           также нужно вывести список групп как с преподавателями
         User.idusers = message.from_user.id
         User.idchat = message.chat.id
-        User.password = message.text
+        User.group = message.text
 
         try:
-            sql = "INSERT INTO _users (idusers, user_chat, user_password) VALUE (%s, %s, %s)"
-            val = (User.idusers, User.idchat, User.password)
+            sql = "INSERT INTO _users (idusers, user_chat, user_password, status_elder, idgroups) VALUE (%s, %s, %s, default, %s)"
+            val = (User.idusers, User.idchat, User.password, User.group)
             mycursor.execute(sql, val)
             mydb.commit()
-            notes_btn(message)
+            bot.send_message(message.from_user.id, "Вы успешно зарегистрированы! Нажмите \"Войти в акаунт\"")
+            bot.register_next_step_handler(message, block_choice)
 
         except:
             bot.send_message(message.from_user.id, "Вы уже зарегистрированы! Попробуйте нажать \"Войти в акаунт\"")
-            bot.register_next_step_handler(message, notes_choice)
+            bot.register_next_step_handler(message, block_choice)
+
 
 @bot.message_handler(content_types=['text'])
-def notes_pass_enter(message):                      # ВХОД В АККАУНТ ЗАМЕТОК
+def block_enter(message):                      # ВХОД В АККАУНТ
         User.idusers = message.from_user.id
         User.password = message.text
 
@@ -425,24 +441,290 @@ def notes_pass_enter(message):                      # ВХОД В АККАУНТ
             
             if len(exist) == 1 :
                 bot.send_message(message.from_user.id, "Вы вошли в аккаунт")
-                notes_btn(message)
+                if User.btn_choice == '💼 Мероприятия':
+                    sql = "SELECT idusers, status_elder FROM _users WHERE idusers = " + str(User.idusers) + " AND status_elder = 1"
+                    mycursor.execute(sql)
+                    status = mycursor.fetchall()
+
+                    if len(status) == 1 :
+                        starosta_btn(message)
+                    else:
+                        student_btn(message)
+
+                if User.btn_choice == '🏢 Консультации':
+                    sql = "SELECT idusers, status_elder FROM _users WHERE idusers = " + str(User.idusers) + " AND status_elder = 1"
+                    mycursor.execute(sql)
+                    status = mycursor.fetchall()
+
+                    if len(status) == 1 :
+                        starosta_btn(message)
+                    else:
+                        student_btn(message)
+
+                if User.btn_choice == '📝 Заметки':
+                    notes_btn(message)
 
             elif message.text == "Зарегистрироваться" or message.text == "Войти в аккаунт":
-                notes_choice(message)
+                block_choice(message)
 
             elif message.text == '/about':
                 about(message)
-                bot.register_next_step_handler(message, notes_pass_enter) 
+                bot.register_next_step_handler(message, block_enter) 
 
             elif message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
                 start(message)
 
             else:
                 bot.send_message(message.from_user.id, "Неверный пароль, либо вы не зарегистрированы!")
-                bot.register_next_step_handler(message, notes_pass_enter)
+                bot.register_next_step_handler(message, block_enter)
         except:
             bot.send_message(message.from_user.id, "Неправильный пароль!")
-            bot.register_next_step_handler(message, notes_pass_enter)
+            bot.register_next_step_handler(message, block_enter)
+
+
+def starosta_btn(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Добавить " +  User.btn_choice)
+    item2 = types.KeyboardButton("Удалить " +  User.btn_choice)
+    item3 = types.KeyboardButton("Вывести все " + User.btn_choice)
+    btn_exit = types.KeyboardButton("⬆️ В главное меню")
+    markup.add(item1, item2, item3, btn_exit)
+    bot.send_message(message.from_user.id,"Выберите что хотите сделать с заметками!", reply_markup = markup)
+    bot.register_next_step_handler(message, startosta_menu)
+
+@bot.message_handler(content_types=['text'])
+def startosta_menu(message):                            
+     if message.text == "Добавить " +  User.btn_choice:
+        bot.register_next_step_handler(message, startosta_menu_add_date)
+        bot.send_message(message.from_user.id, "Чтобы добавить заметку нужно ввести ее по определенному шаблону (ГГГГ-ММ-ДД ЧЧ:ММ)\n"\
+        "Скобки вводить не нужно! \nЗатем Нажмите \"Ввод (Enter)\" и теперь вы сможете записать все, что угодно в заметкку.")
+     if message.text == "Удалить " +  User.btn_choice:
+        bot.register_next_step_handler(message, startosta_menu_delete)
+        #notes_delete_on_date(message)
+        student_getall(message)
+        bot.send_message(message.from_user.id, "Удалить заметку")
+        bot.send_message(message.from_user.id, "Чтобы удалить заметку, нужно ввести ее номер (ID)")
+     if message.text == "Вывести все " + User.btn_choice:
+        student_getall(message)
+        bot.register_next_step_handler(message, startosta_menu)
+     if message.text == '⬆️ В главное меню':
+        start(message)
+
+@bot.message_handler(content_types=['text'])
+def startosta_menu_add_date(message):
+    reg ='\d{4}-\d{2}-\d{2} \d{2}:\d{2}'
+    User.str_notes_date = message.text
+
+    if (re.fullmatch (reg, User.str_notes_date)):
+        bot.register_next_step_handler(message, startosta_menu_add_content)
+        bot.send_message(message.from_user.id, "Введите содержимое")
+
+    elif message.text == 'Вывести все заметки' or message.text == 'Удалить заметку' or message.text == 'Добавить заметку':
+        startosta_menu(message)
+
+    elif message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+        start(message)
+    
+    elif message.text == '/about':
+        about(message)
+        bot.register_next_step_handler(message, startosta_menu_add_date)                   
+      
+    else:
+        bot.send_message(message.from_user.id, "Дата и время введены неправильно! Пожалуйста, проверьте вводимое значение еще раз\
+             и сверьте с шаблоном ➡️ (ГГГГ-ММ-ДД ЧЧ:ММ).\n Попробуйте еще раз:")    
+        bot.register_next_step_handler(message, startosta_menu_add_date)
+
+@bot.message_handler(content_types=['text'])
+def startosta_menu_add_content(message):
+    str_notes_date = User.str_notes_date
+    str_notes_content = message.text
+
+    if User.btn_choice == "💼 Мероприятия":
+        try:
+            sql = "INSERT INTO _events (events_date_time, events_content) VALUE (%s, %s)"
+            val = (str_notes_date, str_notes_content)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            bot.send_message(message.from_user.id, "Ваша заметка успешно добавлена:")
+
+            #notes_menu_getall(message)
+            #здесь должны быть как с заметками весь список выдаваться
+
+            time.sleep (2)
+
+            mycursor.execute('SELECT user_chat FROM _users')
+
+            for result in mycursor.fetchall():
+                for x in result:
+                    bot.send_message(chat_id=x, text="Добавлена новая заметка:\n📌 " + str_notes_date + "\n" + str_notes_content)                                                                                                      
+
+            bot.register_next_step_handler(message, startosta_menu)
+
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, startosta_menu)
+
+    if User.btn_choice == "🏢 Консультации":
+        try:
+            sql = "SELECT idgroups FROM _users WHERE idusers = " + str(User.idusers)
+            mycursor.execute(sql)
+            mygroup = mycursor.fetchall()
+            for x in mygroup:
+                User.group = x[0]
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, startosta_menu)
+
+        try:
+            sql = "INSERT INTO _consultations (consultations_date_time, consultations_content, idgroups) VALUE (%s, %s, %s)"
+            val = (str_notes_date, str_notes_content, User.group)
+            mycursor.execute(sql, val)
+            mydb.commit()
+            bot.send_message(message.from_user.id, "Ваша заметка успешно добавлена:")
+
+            time.sleep (2)
+
+            sql2 = "SELECT user_chat FROM _users WHERE idgroups = " + str(User.group)
+            mycursor.execute(sql2)
+
+            for result in mycursor.fetchall():
+                for x in result:
+                    bot.send_message(chat_id=x, text="Добавлена новая заметка:\n📌 " + str_notes_date + "\n" + str_notes_content)                                                                                                      
+
+            bot.register_next_step_handler(message, startosta_menu)
+
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, startosta_menu)
+
+
+@bot.message_handler(content_types=['text'])
+def startosta_menu_delete(message):
+    str_delete = message.text
+
+    if User.btn_choice == "💼 Мероприятия":
+        if str_delete.isdigit():
+            try:
+                sql = "DELETE FROM _events WHERE idevents = " + str_delete
+                mycursor.execute(sql)
+                mydb.commit()
+                bot.send_message(message.from_user.id, "Ваша заметка успешно удалена:")
+                student_getall(message)
+
+            except:
+                bot.send_message(message.from_user.id, "Что-то пошло не так")
+                bot.register_next_step_handler(message, notes_menu)
+
+    if User.btn_choice == "🏢 Консультации":
+        if str_delete.isdigit():
+         try:
+            sql = "SELECT idgroups FROM _users WHERE idusers = " + str(User.idusers)
+            mycursor.execute(sql)
+            mygroup = mycursor.fetchall()
+            for x in mygroup:
+                User.group = x[0]
+         except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, startosta_menu)
+
+        try:
+            sql2 = "DELETE FROM _consultations WHERE idconsultations = " + str_delete + " AND idgroups = " + str(User.group)
+            mycursor.execute(sql2)
+            mydb.commit()
+            bot.send_message(message.from_user.id, "Ваша заметка успешно удалена:")
+            student_getall(message)
+            bot.register_next_step_handler(message, startosta_menu)
+
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, notes_menu)
+
+    elif message.text == 'Вывести все заметки' or message.text == 'Удалить заметку' or message.text == 'Добавить заметку':
+        startosta_menu(message)
+
+    elif message.text == '⬆️ В главное меню'  or message.text == '/start':          # выполняется переход в главное меню
+        start(message)
+    
+    elif message.text == '/about':
+        about(message)
+        bot.register_next_step_handler(message, startosta_menu_delete)
+
+    else:
+        bot.send_message(message.from_user.id, "Ввести ID, значит ввести цифры сверху над заметкой, справа от знака 📌. \n\n Попробуйте ввести ID заметки для удаления еще раз:")
+        bot.register_next_step_handler(message, startosta_menu_delete)
+
+
+def student_getall(message):
+    if User.btn_choice == "💼 Мероприятия":
+        try:
+                bot.send_message(message.from_user.id, "Список ваших заметок:")
+                sql = "SELECT idevents, events_date_time, events_content FROM _events ORDER BY events_date_time"
+                mycursor.execute(sql)
+                str_all_task = ""
+
+                for result in mycursor.fetchall():
+                    str_one_task = "📌"
+                    for x in result:
+                        str_one_task += " " + str(x) + "\n"
+
+                    str_all_task += str_one_task + "\n"
+                    str_all_task += "\n"
+
+                bot.send_message(message.from_user.id, str_all_task)
+
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, startosta_menu)
+
+    if User.btn_choice == "🏢 Консультации":
+        try:
+            sql = "SELECT idgroups FROM _users WHERE idusers = " + str(User.idusers)
+            mycursor.execute(sql)
+            mygroup = mycursor.fetchall()
+            for x in mygroup:
+                User.group = x[0]
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, startosta_menu)
+
+        try:
+                bot.send_message(message.from_user.id, "Список ваших заметок:")
+                sql = "SELECT idconsultations, consultations_date_time, consultations_content FROM _consultations WHERE idgroups = " + str(User.group) + " ORDER BY consultations_date_time"
+                mycursor.execute(sql)
+                str_all_task = ""
+
+                for result in mycursor.fetchall():
+                    str_one_task = "📌"
+                    for x in result:
+                        str_one_task += " " + str(x) + "\n"
+
+                    str_all_task += str_one_task + "\n"
+                    str_all_task += "\n"
+
+                bot.send_message(message.from_user.id, str_all_task)
+
+        except:
+            bot.send_message(message.from_user.id, "Что-то пошло не так")
+            bot.register_next_step_handler(message, startosta_menu)
+
+
+def student_btn(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Вывести все " + User.btn_choice)
+    btn_exit = types.KeyboardButton("⬆️ В главное меню")
+    markup.add(item1, btn_exit)
+    bot.send_message(message.from_user.id,"Выберите что хотите сделать с заметками!", reply_markup = markup)
+    bot.register_next_step_handler(message, student_menu)
+
+
+@bot.message_handler(content_types=['text'])
+def student_menu(message):                            
+     if message.text == "Вывести все " + User.btn_choice:
+        student_getall(message)
+        bot.register_next_step_handler(message, startosta_menu)
+     if message.text == '⬆️ В главное меню':
+        start(message)
+
 
 def notes_btn(message):                                            # КНОПКИ УПРАВЛЕНИЯ ЗАМЕТКАМИ (УДАЛИТЬ, ДОБАВИТЬ, ПОКАЗАТЬ)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -454,13 +736,14 @@ def notes_btn(message):                                            # КНОПК�
     bot.send_message(message.from_user.id,"Выберите что хотите сделать с заметками!", reply_markup = markup)
     bot.register_next_step_handler(message, notes_menu)
 
+
 @bot.message_handler(content_types=['text'])
 def notes_menu(message):                            # ДОБАВЛЕНИЕ ЗАМЕТКИ
     if message.text == 'Добавить заметку':
         bot.register_next_step_handler(message, notes_menu_add_date)
         bot.send_message(message.from_user.id, "Добавить заметку")
         bot.send_message(message.from_user.id, "Чтобы добавить заметку нужно ввести ее по определенному шаблону (ГГГГ-ММ-ДД ЧЧ:ММ)\n"\
-        "Скобки вводить не нужно! \nЗатем Нажмите \"Ввод (Enter)\" и теперь вы сможете записать все, что угодно в заметку.")
+        "Скобки вводить не нужно! \nЗатем Нажмите \"Ввод (Enter)\" и теперь вы сможете записать все, что угодно в заметкку.")
 
     elif message.text == 'Удалить заметку':
         bot.register_next_step_handler(message, notes_menu_delete)
@@ -468,7 +751,8 @@ def notes_menu(message):                            # ДОБАВЛЕНИЕ ЗА�
 
         try:
             bot.send_message(message.from_user.id, "Список ваших заметок:")
-            mycursor.execute('SELECT idtest, date_time, content FROM _test ORDER BY date_time')
+            sql = "SELECT idnotes, note_date_time, note_content FROM _notes WHERE idusers = " + str(User.idusers) + " ORDER BY note_date_time"
+            mycursor.execute(sql)
             str_all_task = ""
 
             for result in mycursor.fetchall():
@@ -503,6 +787,7 @@ def notes_menu(message):                            # ДОБАВЛЕНИЕ ЗА�
         bot.send_message(message.from_user.id, sorry_message())
         bot.register_next_step_handler(message, notes_menu)    
 
+
 @bot.message_handler(content_types=['text'])
 def notes_menu_add_date(message):                 # ДОБАВЛЕНИЕ ДАТЫ
     notes_delete_on_date(message)
@@ -534,20 +819,13 @@ def notes_menu_add_content(message):                  # ВВОД ДАТЫ И С�
     str_notes_content = message.text
 
     try:
-        sql = "INSERT INTO _test (date_time, content) VALUE (%s, %s)"
-        val = (str_notes_date, str_notes_content)
+        sql = "INSERT INTO _notes (note_date_time, note_content, idusers) VALUE (%s, %s, %s)"
+        val = (str_notes_date, str_notes_content, User.idusers)
         mycursor.execute(sql, val)
         mydb.commit()
         bot.send_message(message.from_user.id, "Ваша заметка успешно добавлена:")
-        notes_menu_getall(message)
 
-        time.sleep (2)
-
-        mycursor.execute('SELECT user_chat FROM _users')
-
-        for result in mycursor.fetchall():
-            for x in result:
-                bot.send_message(chat_id=x, text="Добавлена новая заметка:\n📌 " + str_notes_date + "\n" + str_notes_content)                                                                                                      
+        bot.send_message(message.from_user.id, "Добавлена новая заметка:\n📌 " + str_notes_date + "\n" + str_notes_content)                                                                                                      
 
         bot.register_next_step_handler(message, notes_menu)
 
@@ -562,7 +840,7 @@ def notes_menu_delete(message):               # УДАЛЕНИЕ ЗАМЕТКИ 
 
     if str_delete.isdigit():
         try:
-            sql = "DELETE FROM _test WHERE idtest = " + str_delete
+            sql = "DELETE FROM _notes WHERE idnotes = " + str_delete + " AND idusers = " + str(User.idusers)
             mycursor.execute(sql)
             mydb.commit()
             bot.send_message(message.from_user.id, "Ваша заметка успешно удалена:")
@@ -591,7 +869,8 @@ def notes_menu_getall(message):
     notes_delete_on_date(message)                # УДАЛЕНИЕ ЗАМЕТКИ (ПО ПО ИСТЕЧЕНИИ ДАТЫ И ВРЕМЕНИ)
     try:
         bot.send_message(message.from_user.id, "Список ваших заметок:")
-        mycursor.execute('SELECT idtest, date_time, content FROM _test ORDER BY date_time')
+        sql = "SELECT idnotes, note_date_time, note_content FROM _notes WHERE idusers = " + str(User.idusers) + " ORDER BY note_date_time"
+        mycursor.execute(sql)
         str_all_task = ""
 
         for result in mycursor.fetchall():
@@ -612,7 +891,7 @@ def notes_menu_getall(message):
 
 def notes_delete_on_date(message):
     try:
-        mycursor.execute('DELETE FROM _test WHERE date_time < NOW()')
+        mycursor.execute('DELETE FROM _notes WHERE note_date_time < NOW()')
         mydb.commit()
 
     except:
@@ -631,9 +910,13 @@ def table_teacher_name(message):                         # ВВОД ИМЯ ПР�
         about(message)
         bot.register_next_step_handler(message, table_teacher_name)
 
+    elif message.text == '⬅️ Назад':          # выполняется переход в главное меню
+        markup, notification  = one_step_back('📅 Расписание', message)
+        bot.send_message(message.from_user.id, notification, reply_markup = markup)
+        bot.register_next_step_handler(message, table)
+
     elif teacher_name_search(message):
-        bot.send_message(message.from_user.id, "Выберите какая неделя вас интересует:")
-        bot.send_message(message.from_user.id,"Выберите на какой день недели нужно расписание", reply_markup = menu_parity_of_week())
+        bot.send_message(message.from_user.id,"Выберите какая неделя вас интересует:", reply_markup = menu_parity_of_week())
         bot.register_next_step_handler(message, table_teacher_parity)
 
     else:
@@ -651,6 +934,13 @@ def table_teacher_parity(message):            # ВВОД ЧЕТНОСТИ НЕД
     elif message.text == '/about':
         about(message)
         bot.register_next_step_handler(message, table_teacher_parity)
+
+    elif message.text == '🔄 Выбрать другого преподавателя':
+        bot.send_message(message.from_user.id,"Возвращаю список преподавателей:", reply_markup = choice_another_teacher())
+        #ДОЛЖНА БЫТЬ ФУНКЦИЯ СПИСОК ПРЕПОДАВАТЕЛЕЙ
+        teacher_fulltable(message)
+        bot.send_message(message.from_user.id, "Введите ФИО преподаватели из представленного списка")
+        bot.register_next_step_handler(message, table_teacher_name)
 
     elif User.teacher_parity == '1' or User.teacher_parity == '2': 
         bot.send_message(message.from_user.id,"Выберите на какой день недели нужно расписание", reply_markup = menu_day_of_week())
@@ -671,6 +961,10 @@ def table_teacher_day(message):                    # ВВОД ДНЯ НЕДЕЛ�
     elif message.text == '/about':
         about(message)
         bot.register_next_step_handler(message, table_teacher_day)
+        
+    elif message.text == '↩️ Выбрать другую неделю':
+        bot.send_message(message.from_user.id,"Возвращаю список преподавателей:", reply_markup = menu_parity_of_week())
+        bot.register_next_step_handler(message, table_teacher_parity)
 
     elif choice_day_of_week(message) != 0:          # выполняется переход в главное меню
         User.teacher_day = choice_day_of_week(message)
